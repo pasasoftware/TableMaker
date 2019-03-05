@@ -1,0 +1,16 @@
+PODS:
+  - TableMaker (1.0.0)
+
+DEPENDENCIES:
+  - TableMaker (from `../`)
+
+EXTERNAL SOURCES:
+  TableMaker:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  TableMaker: d71cfc753bd8074096bc647fbf3e80f0bdc25ea5
+
+PODFILE CHECKSUM: dd8e733f2094895b979d9addde8c8df0ffa08133
+
+COCOAPODS: 1.5.3

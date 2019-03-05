@@ -1,0 +1,1 @@
+pod repo push GitLab TableMaker.podspec

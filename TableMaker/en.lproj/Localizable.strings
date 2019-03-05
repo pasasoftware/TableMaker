@@ -1,0 +1,15 @@
+/* 
+  Localizable.strings
+  TableMaker
+
+  Created by pasasoft_mini on 2018/5/30.
+  Copyright © 2018年 Andrew Chai. All rights reserved.
+*/
+
+"TakePhoto" = "Take photo";
+"ChooseFromAlbum" = "Choose from Album";
+"Cancel" = "Cancel";
+"PhotoLibraryAccessSetting" = "Photo library access is restricted, go to settings";
+"CameraAccessSettings" = "Camera access is restricted, go to settings";
+"Error" = "Error";
+"OK" = "OK";
