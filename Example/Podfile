@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'TableMaker_Example' do
+  pod 'TableMaker', :path => '../'
+
+  target 'TableMaker_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
