@@ -71,6 +71,13 @@ class PeopleViewController: DetailViewController {
         let item1 = LabelItem2(people){$0.fullName}
         item1.title = "Name"
         
+        let item2 = ActionLabelItem2(people){$0.fullName}
+        item2.title = "Action Label"
+        item2.accessoryType = .disclosureIndicator
+        item2.action = {
+            print("action label tap")
+        }
+        
         let firstNameItem = TextFieldItem(people, host: self){$0.firstName}
         firstNameItem.title = "First Name"
         firstNameItem.setter = {
@@ -146,7 +153,7 @@ class PeopleViewController: DetailViewController {
         let item4 = ActionItem(title: "Action item with image", image: UIImage(named: "bulb")){ai in}
         let item5 = ActionItem(title: "Action item"){}
         
-        let section1 = TableSection([item1, ageItem, petItem, hobbyItem, phoneItem, emailItem, genderItem])
+        let section1 = TableSection([item1, item2, ageItem, petItem, hobbyItem, phoneItem, emailItem, genderItem])
         section1.headerView = customView(title: "Section1 Header")
         section1.headerHeight = 80
         section1.footerView = customView(title: "Section1 Footer")
