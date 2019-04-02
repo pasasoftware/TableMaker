@@ -22,7 +22,7 @@ platform :ios do
 
     target_version = options[:version]
 
-    project        = options[:project]
+    project        = "TableMaker"
 
     path           = "#{project}.podspec"
 
@@ -38,7 +38,7 @@ platform :ios do
 
     push_to_git_remote # 推送到 git 仓库 
 
-    pod_push(path: path, repo: "55-guanping.cai-cocoapods", allow_warnings: true, sources: SOURCES) # 提交到 CocoaPods
+    pod_push(path: path, repo: "55-guanping.cai-cocoapods", allow_warnings: true) # 提交到 CocoaPods
 
   end
 
