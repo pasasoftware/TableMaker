@@ -18,7 +18,7 @@ default_platform(:ios)
 platform :ios do
 
   desc "Release new private pod version"
-  lane :do_release_lib do |options|
+  lane :release do |options|
 
     target_version = options[:version]
 
@@ -26,15 +26,9 @@ platform :ios do
 
     path           = "#{project}.podspec"
 
-    hipchat(message: "Start release pod #{project} at version #{target_version}")
-
     git_pull
 
     ensure_git_branch # 确认 master 分支 
-
-    pod_install
-
-    pod_lib_lint(verbose: true, allow_warnings: true, sources: SOURCES, use_bundle_exec: true, fail_fast: true)
 
     version_bump_podspec(path: path, version_number: target_version) # 更新 podspec
 
@@ -45,8 +39,6 @@ platform :ios do
     push_to_git_remote # 推送到 git 仓库 
 
     pod_push(path: path, repo: "55-guanping.cai-cocoapods", allow_warnings: true, sources: SOURCES) # 提交到 CocoaPods
-
-    hipchat(message: "Release pod #{project} Successfully!")
 
   end
 
