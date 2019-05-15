@@ -19,11 +19,11 @@ Pod::Spec.new do |s|
 
   s.description      = 'Make table easier, have fun'
 
-  s.homepage         = 'http://27.154.55.14:30000/mobile/TableMaker'
+  s.homepage         = 'http://192.168.0.115/mobile/TableMaker'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'guanping.cai' => 'andrew@measuresquare.com' }
-  s.source           = { :git => 'ssh://git@27.154.55.14:30001/mobile/TableMaker.git', :tag => s.version.to_s }
+  s.source           = { :git => 'ssh://git@192.168.0.115:8888/mobile/TableMaker.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '9.0'
