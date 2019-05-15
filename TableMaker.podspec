@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TableMaker'
-  s.version          = '1.0.10'
+  s.version          = '1.0.11'
   s.summary          = 'Make table easier'
 
 # This description is used to generate tags and improve search results.
