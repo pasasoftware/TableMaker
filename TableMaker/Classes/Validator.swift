@@ -14,11 +14,11 @@ public protocol Validatable : AnyObject {
 }
 
 public extension Validatable {
-    public func addValidator(_ validator: Validator<T>) {
+    func addValidator(_ validator: Validator<T>) {
         validators.append(validator)
     }
     
-    public func removeValidator(_ validator: Validator<T>) {
+    func removeValidator(_ validator: Validator<T>) {
         if let index = validators.index(where: {$0 === validator}) {
             validators.remove(at: index)
         }
