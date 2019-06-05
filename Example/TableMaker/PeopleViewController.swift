@@ -22,7 +22,7 @@ class HobbyImageConverter: Converter<Int, UIImage?>{
     }
     
     public override func convertBack(_ value: UIImage?) -> Int? {
-        return images.index(of: value!)
+        return images.firstIndex(of: value!)
     }
 }
 

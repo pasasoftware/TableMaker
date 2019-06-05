@@ -33,7 +33,7 @@ public class TableSection {
     }
     
     public func removeItem(item: TableItem){
-        if let index = items.index(where: {$0 === item}) {
+        if let index = items.firstIndex(where: {$0 === item}) {
             items.remove(at: index)
         }
     }

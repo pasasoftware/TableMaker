@@ -24,7 +24,7 @@ open class SelectorViewController<T: CustomStringConvertible & Equatable>: UITab
     public var selectedValue: T? {
         didSet {
             guard   let value = selectedValue,
-                    let index = datas.index(of: value) else {
+                    let index = datas.firstIndex(of: value) else {
                 return
             }
             selectedIndex = index

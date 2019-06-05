@@ -59,7 +59,7 @@ public class SegmentItem<T, U: Equatable & CustomStringConvertible, V: CustomStr
             insertSegment(segment, at: i, item: items[i])
         }
         
-        if let index = items.index(of: getValue()){
+        if let index = items.firstIndex(of: getValue()){
             segment.selectedSegmentIndex = index
         }
         

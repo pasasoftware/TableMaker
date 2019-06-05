@@ -44,7 +44,7 @@ open class DetailViewController: UITableViewController {
     public func deleteSection(sections: [TableSection]) {
         var indexSet = IndexSet()
         for section in sections {
-            if let index = self.sections.index(where: {$0 === section}){
+            if let index = self.sections.firstIndex(where: {$0 === section}){
                 indexSet.insert(index)
             }
         }
