@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TableMaker'
-  s.version          = '1.0.16'
+  s.version          = '1.0.17'
   s.summary          = 'Make table easier'
 
 # This description is used to generate tags and improve search results. blah
@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '9.0'
-  s.swift_version = '4.2'
+  s.swift_version = '5.0'
   s.source_files = 'TableMaker/Classes/**/*'
   
   s.resource_bundles = {
