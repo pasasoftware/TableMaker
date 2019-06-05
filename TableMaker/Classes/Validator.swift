@@ -19,7 +19,7 @@ public extension Validatable {
     }
     
     func removeValidator(_ validator: Validator<T>) {
-        if let index = validators.index(where: {$0 === validator}) {
+        if let index = validators.firstIndex(where: {$0 === validator}) {
             validators.remove(at: index)
         }
     }
