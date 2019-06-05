@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.version          = '1.0.14'
   s.summary          = 'Make table easier'
 
-# This description is used to generate tags and improve search results.
+# This description is used to generate tags and improve search results. blah
 #   * Think: What does it do? Why did you write it? What is the focus?
 #   * Try to keep it short, snappy and to the point.
 #   * Write the description between the DESC delimiters below.
