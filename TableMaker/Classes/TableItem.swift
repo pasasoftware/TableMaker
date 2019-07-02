@@ -805,10 +805,10 @@ public class TextViewCell: UITableViewCell{
         super.init(style: .value1, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(textView)
         NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
-            textView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
-            textView.topAnchor.constraint(equalTo: contentView.readableContentGuide.topAnchor),
-            textView.bottomAnchor.constraint(equalTo: contentView.readableContentGuide.bottomAnchor),
+            textView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            textView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            textView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+            textView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
             ])
         textView.setPlaceholder()
     }
