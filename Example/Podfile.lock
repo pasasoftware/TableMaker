@@ -1,5 +1,5 @@
 PODS:
-  - TableMaker (1.0.14)
+  - TableMaker (1.0.18)
 
 DEPENDENCIES:
   - TableMaker (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  TableMaker: 66ff8953be8cb2265d1e315200b03914323ebb47
+  TableMaker: 41cd72734b14e3b8c0038bee59f6235f92224d7d
 
 PODFILE CHECKSUM: dd8e733f2094895b979d9addde8c8df0ffa08133
 
-COCOAPODS: 1.7.1
+COCOAPODS: 1.11.2

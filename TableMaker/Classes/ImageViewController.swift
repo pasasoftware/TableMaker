@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-let isPad = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad ? true : false)
+let isPad = (UIDevice.current.userInterfaceIdiom == .pad ? true : false)
 
 class ImageViewController: UIViewController{
     public var image: UIImage!
@@ -31,17 +31,17 @@ class ImageViewController: UIViewController{
                 imageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
                 imageView.widthAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.widthAnchor),
                 imageView.heightAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.heightAnchor),
-                ])
+            ])
         } else {
             NSLayoutConstraint.activate([
                 imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                 imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
                 imageView.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor),
                 imageView.heightAnchor.constraint(lessThanOrEqualTo: view.readableContentGuide.heightAnchor),
-                ])
+            ])
         }
-
-
+        
+        
         var bundle = Bundle(for: ImageViewController().classForCoder)
         if let resourcePath = bundle.path(forResource: "TableMaker", ofType: "bundle") {
             if let resourcesBundle = Bundle(path: resourcePath) {
@@ -67,11 +67,11 @@ class ImageViewController: UIViewController{
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         let takePhoto = UIAlertAction(title: Localizable.TakePhoto.localized,
                                       style: .destructive) { [weak self] (action) in
-                                        self?.takePhoto()
+            self?.takePhoto()
         }
         let choosePhoto = UIAlertAction(title: Localizable.ChooseFromAlbum.localized,
                                         style: .destructive) { [weak self] (action) in
-                                            self?.chooseFromLibrary()
+            self?.chooseFromLibrary()
         }
         let cancel = UIAlertAction(title: Localizable.Cancel.localized, style: .cancel)
         alertController.addAction(takePhoto)
@@ -116,12 +116,12 @@ class ImageViewController: UIViewController{
     
 }
 
-extension ImageViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+extension ImageViewController: UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-// Local variable inserted by Swift 4.2 migrator.
-let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
-
+        // Local variable inserted by Swift 4.2 migrator.
+        let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+        
         if let chooseImage = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.editedImage)] as? UIImage{
             imageView.image = chooseImage
             if let action = self.chooseAction {
@@ -136,18 +136,16 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
     }
 }
 
-
-
-
-
-
+extension ImageViewController: UINavigationControllerDelegate {
+    
+}
 
 // Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+    return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
 }
 
 // Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
-	return input.rawValue
+    return input.rawValue
 }

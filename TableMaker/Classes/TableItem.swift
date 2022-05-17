@@ -55,7 +55,7 @@ open class Converter<T, U> {
     }
 }
 
-public protocol TableItemHost : class {
+public protocol TableItemHost : AnyObject {
     var viewController: UIViewController {get}
     var tableView: UITableView! {get}
     func valueWillChange(_ tableItem: TableItem)
