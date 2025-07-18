@@ -23,13 +23,11 @@ public class IntStringConverter: Converter<Int,String?>{
     }
 }
 
-extension Optional : CustomStringConvertible {
+extension Optional: @retroactive CustomStringConvertible where Wrapped: CustomStringConvertible {
     public var description: String {
         switch self {
         case .some(let value):
-            var result = ""
-            print(value, terminator: "", to: &result)
-            return result
+            return value.description
         case .none:
             return ""
         }
