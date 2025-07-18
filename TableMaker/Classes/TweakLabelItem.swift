@@ -11,6 +11,35 @@ import UIKit
 
 //let TweakLabelMargin: CGFloat = 5.0
 
+open class TweakLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: DataTableItem<T, U, V> {
+    open override var identifier: String {
+        return "TweakLabelCellReuseId"
+    }
+
+    public override init(_ data: T, getter: @escaping (T) -> U) {
+        super.init(data, getter: getter)
+        height = UITableView.automaticDimension
+    }
+
+    open override func createCell() -> UITableViewCell {
+        let cell = TweakLabelCell(style: .value1, reuseIdentifier: identifier)
+        cell.selectionStyle = .none
+        return cell
+    }
+
+    open override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
+        super.setup(tableView, cell: cell, at: indexPath)
+
+        // Set text
+        cell.textLabel?.text = title
+        cell.detailTextLabel?.text = getDescription()
+        cell.setNeedsUpdateConstraints()
+    }
+}
+
+//todo TweakLabelItem2 should be TweakLabelItem, but swift don't support it
+public typealias TweakLabelItem2<T, U: Equatable & CustomStringConvertible> = TweakLabelItem<T, U, U>
+
 open class TweakLabelCell: UITableViewCell {
 
     // MARK: - Property
