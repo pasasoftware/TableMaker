@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 open class ActionLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: LabelItem<T,U,V>
 {

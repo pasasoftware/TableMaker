@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 open class ComboItem<T, U: Equatable & CustomStringConvertible>: TextFieldItem<T,U> {
     
