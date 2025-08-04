@@ -18,27 +18,33 @@ public class TextFieldCell: UITableViewCell {
     private var textYEmptyTitle: NSLayoutConstraint!
     private var textY: NSLayoutConstraint!
     
+    private var textFieldMinWidth: NSLayoutConstraint!
     
     public init(reuseIdentifier: String?) {
         textField = UITextField()
         textField.clearButtonMode = .whileEditing
         textField.translatesAutoresizingMaskIntoConstraints = false
-        
         super.init(style: .value1, reuseIdentifier: reuseIdentifier)
         
         let margin = contentView.layoutMarginsGuide
         
         textLeadingEmptyTitle = textField.leadingAnchor.constraint(equalTo: margin.leadingAnchor)
-        textLeading = textField.leadingAnchor.constraint(equalTo: textLabel!.trailingAnchor, constant: 8)
+        textLeading = textField.leadingAnchor.constraint(greaterThanOrEqualTo: textLabel!.trailingAnchor, constant: 5) // 修改 constant 为 5
         
         textY = textField.lastBaselineAnchor.constraint(equalTo: textLabel!.lastBaselineAnchor)
         textYEmptyTitle = textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         
+        textFieldMinWidth = textField.widthAnchor.constraint(greaterThanOrEqualToConstant: 80)
+        
         contentView.addSubview(textField)
         
         textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        textLabel?.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         margin.trailingAnchor.constraint(equalTo: textField.trailingAnchor).isActive = true
+        
+        textFieldMinWidth.isActive = true
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -49,17 +55,13 @@ public class TextFieldCell: UITableViewCell {
         textField.delegate = nil
     }
     
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-    }
-    
-    override public func updateConstraints() {
+    public override func updateConstraints() {
         super.updateConstraints()
         if let _ = textLabel?.text {
             NSLayoutConstraint.deactivate([textLeadingEmptyTitle, textYEmptyTitle])
-            NSLayoutConstraint.activate([textLeading,textY])
+            NSLayoutConstraint.activate([textLeading, textY])
         } else {
-            NSLayoutConstraint.deactivate([textLeading,textY])
+            NSLayoutConstraint.deactivate([textLeading, textY])
             NSLayoutConstraint.activate([textLeadingEmptyTitle, textYEmptyTitle])
         }
     }
@@ -79,6 +81,15 @@ open class TextFieldItem<T, U: Equatable & CustomStringConvertible>: DataTableIt
     }
     
     public var textAlignment: NSTextAlignment = .right
+    public var keyboardType: UIKeyboardType = .default
+    
+    public var leftView: UIView?
+    public var rightView: UIView?
+    
+    private enum ErrorViewSide {
+            case none, left, right
+        }
+    private var errorViewSide: ErrorViewSide = .none
     
     public override var status: DataItemStatus<String?>{
         didSet{
@@ -99,7 +110,18 @@ open class TextFieldItem<T, U: Equatable & CustomStringConvertible>: DataTableIt
     open override func createCell() -> UITableViewCell {
         let cell = TextFieldCell(reuseIdentifier: identifier)
         cell.textField.textAlignment = .right
+        cell.textField.keyboardType = keyboardType
         cell.selectionStyle = .none
+        if let leftView {
+            cell.textField.leftView = leftView
+            cell.textField.leftViewMode = .always
+        }
+        
+        if let rightView {
+            cell.textField.rightView = rightView
+            cell.textField.rightViewMode = .always
+        }
+        
         return cell
     }
     
@@ -139,19 +161,28 @@ open class TextFieldItem<T, U: Equatable & CustomStringConvertible>: DataTableIt
     
     func showError() {
         if let cell = host?.getCell(self) as? TextFieldCell {
-            cell.textField.rightViewMode = .always
             let label = UILabel()
             label.text = "❗️"
             label.sizeToFit()
-            cell.textField.rightView = label
+            
+            if rightView == nil || leftView != nil {
+                cell.textField.rightViewMode = .always
+                cell.textField.rightView = label
+                errorViewSide = .right
+            } else {
+                cell.textField.leftViewMode = .always
+                cell.textField.leftView = label
+                errorViewSide = .left
+            }
         }
     }
     
-    func clearError() {
-        if let cell = host?.getCell(self) as? TextFieldCell {
-            cell.textField.rightViewMode = .never
-            cell.textField.rightView = nil
-        }
+    private func clearError() {
+        guard let cell = host?.getCell(self) as? TextFieldCell else { return }
+        cell.textField.leftViewMode = leftView != nil ? .always : .never
+        cell.textField.rightViewMode = rightView != nil ? .always : .never
+        cell.textField.leftView = leftView
+        cell.textField.rightView = rightView
     }
     
     override func willSetValue() {
@@ -159,4 +190,11 @@ open class TextFieldItem<T, U: Equatable & CustomStringConvertible>: DataTableIt
         clearError()
     }
     
+    open override func select(_ tableView: UITableView, at indexPath: IndexPath) {
+        super.select(tableView, at: indexPath)
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? TextFieldCell {
+            cell.textField.becomeFirstResponder()
+        }
+    }
 }

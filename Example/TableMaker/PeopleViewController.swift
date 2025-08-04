@@ -74,7 +74,7 @@ class PeopleViewController: DetailViewController {
         let item2 = ActionLabelItem2(people){$0.fullName}
         item2.title = "Action Label"
         item2.accessoryType = .disclosureIndicator
-        item2.action = {
+        item2.action = { item in
             print("action label tap")
         }
         
@@ -98,6 +98,7 @@ class PeopleViewController: DetailViewController {
         
         let ageItem = TextFieldItem(people, host: self){$0.age}
         ageItem.title = "Age"
+        ageItem.keyboardType = .numberPad
         ageItem.setter = {
             $0.age = $1
         }
@@ -132,6 +133,11 @@ class PeopleViewController: DetailViewController {
         
         let emailItem = TextFieldItem(people, host: self){
             $0.email
+        }
+        emailItem.keyboardType = .emailAddress
+        if #available(iOS 13.0, *) {
+            emailItem.rightView = UIImageView(image: UIImage(systemName: "square.and.arrow.up.circle.fill")!)
+            emailItem.leftView = UIImageView(image: UIImage(systemName: "square.and.arrow.up.circle.fill")!)
         }
         emailItem.title = "Email"
         emailItem.setter = {

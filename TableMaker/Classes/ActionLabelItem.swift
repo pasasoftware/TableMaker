@@ -14,7 +14,7 @@ open class ActionLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomS
     open override var identifier: String {
         return "actionLabelCellReuseId"
     }
-    public var action:(()->Void)?
+    public var action:((ActionLabelItem<T, U, V>)->Void)?
     
     open override var accessoryType: UITableViewCell.AccessoryType {
         set{
@@ -29,7 +29,7 @@ open class ActionLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomS
     
     open override func select(_ tableView: UITableView, at indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        action?()
+        action?(self)
     }
     
 }
