@@ -302,21 +302,30 @@ class PeopleViewController: DetailViewController {
         comoboItem.style = .popover
         let section14 = TableSection([selectorItem, comoboItem])
         
+        let multiSelectorItem = MultiSelectorItem<People, String, String>(people, host: self, values: ["Reading", "Coding", "Gaming", "Sports"]){$0.hobbies}
+        multiSelectorItem.title = "Hobbies"
+        multiSelectorItem.setter = { $0.hobbies = $1 }
+        multiSelectorItem.formatter = {$0.count > 2 ? "\($0.count)" : $0.map { $0.description }.joined(separator: ", ")}
+        let section15 = TableSection([multiSelectorItem])
         
-        sections = [section1,
-                    section2,
-                    section3,
-                    section4,
-                    section5,
-                    section6,
-                    section7,
-                    section8,
-                    section9,
-                    section10,
+        
+        sections = [
+//            section1,
+//                    section2,
+//                    section3,
+//                    section4,
+//                    section5,
+//                    section6,
+//                    section7,
+//                    section8,
+//                    section9,
+//                    section10,
                     //                    section11,
-            section12,
-            section13,
-            section14]
+//            section12,
+//            section13,
+//            section14,
+            section15
+        ]
     }
     
     override func valueDidChange(_ tableItem: TableItem) {

@@ -44,5 +44,7 @@ class People {
 
     var introduction: String?
     
+    var hobbies: [String] = ["Reading", "Coding"]
+    
     var iconImage: UIImage! = UIImage(named: "headIcon")
 }
