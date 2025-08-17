@@ -9,22 +9,10 @@
 import Foundation
 import UIKit
 
-// A default converter for arrays of CustomStringConvertible to String
-open class ArrayStringConverter<U: CustomStringConvertible>: Converter<[U], String> {
-    public var separator: String
-    
-    public init(separator: String = ", ") {
-        self.separator = separator
-        super.init()
-    }
-    
-    open override func convert(_ value: [U]) -> String {
-        return value.map { $0.description }.joined(separator: separator)
-    }
-    
-    open override func convertBack(_ value: String) -> [U]? {
-        // This is typically not needed for display-only converters
-        return nil
+// Make Array conform to CustomStringConvertible when elements are CustomStringConvertible
+extension Array: @retroactive CustomStringConvertible where Element: CustomStringConvertible {
+    public var description: String {
+        return self.map { $0.description }.joined(separator: ", ")
     }
 }
 
@@ -55,10 +43,9 @@ open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: Custo
         super.init(data, getter: getter)
         self.host = host
         
-        // Set up default converter if V is String
-//        if V.self == String.self {
-//            self.converter = ArrayStringConverter<U>() as? Converter<[U], V>
-//        }
+        // MultiSelectorItem 默认不提供 converter
+        // 因为从显示文本 convertBack 到数组是复杂且不可靠的
+        // 用户应该根据需要自定义 formatter 来控制显示格式
     }
 
     // MARK: - Override
@@ -115,4 +102,5 @@ open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: Custo
 }
 
 //Todo MultiSelectorItem2 should be MultiSelectorItem, but swift don't support it
-public typealias MultiSelectorItem2<T, U: Equatable & CustomStringConvertible> = MultiSelectorItem<T, U, String>
+// 使用数组本身作为显示类型，依赖 Array 的 CustomStringConvertible 扩展
+public typealias MultiSelectorItem2<T, U: Equatable & CustomStringConvertible> = MultiSelectorItem<T, U, [U]>

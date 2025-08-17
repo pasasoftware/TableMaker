@@ -305,8 +305,15 @@ class PeopleViewController: DetailViewController {
         let multiSelectorItem = MultiSelectorItem2(people, host: self, values: ["Reading", "Coding", "Gaming", "Sports"]){$0.hobbies}
         multiSelectorItem.title = "Hobbies"
         multiSelectorItem.setter = { $0.hobbies = $1 }
+        // 通过 formatter 自定义显示格式，而不是使用 converter
         multiSelectorItem.formatter = { values in
-            return values.count > 2 ? "\(values.count) selected" : values
+            if values.isEmpty {
+                return "None selected"
+            } else if values.count > 2 {
+                return "\(values.count) hobbies selected"
+            } else {
+                return values.description // 使用默认的 "item1, item2" 格式
+            }
         }
         let section15 = TableSection([multiSelectorItem])
         
