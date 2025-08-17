@@ -23,8 +23,10 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         let people = People()
         let controller = PeopleViewController(people)
-        let nav = UINavigationController(rootViewController: controller)
-        present(nav, animated: true)
+        present(controller, animated: true)
+
+//        let nav = UINavigationController(rootViewController: controller)
+//        present(nav, animated: true)
     }
 
 }

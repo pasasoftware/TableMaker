@@ -16,7 +16,7 @@ extension Array: @retroactive CustomStringConvertible where Element: CustomStrin
     }
 }
 
-open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible & Equatable>: DataTableItem<T, [U], V> {
+open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible & Equatable>: LabelItem<T, [U], V> {
 
     // MARK: - Property
     open override var identifier: String {
@@ -50,17 +50,13 @@ open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: Custo
 
     // MARK: - Override
     open override func createCell() -> UITableViewCell {
-        let cell = UITableViewCell(style: .value1, reuseIdentifier: identifier)
+        let cell = super.createCell()
+        // 覆盖 LabelItem 的默认选择样式，因为 MultiSelector 需要可点击
         cell.selectionStyle = .default
-        cell.accessoryType = accessoryType
         return cell
     }
     
-    open override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
-        super.setup(tableView, cell: cell, at: indexPath)
-        cell.textLabel?.text = title
-        cell.detailTextLabel?.text = getDescription()
-    }
+    // setup 方法直接继承 LabelItem 的实现即可，无需重写
     
     open override func select(_ tableView: UITableView, at indexPath: IndexPath) {
         // For MultiSelector, we always push to a new view controller
@@ -87,10 +83,10 @@ open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: Custo
         } else if let sourceVC = sourceVC { // If sourceVC is not nil then try present controller
 
             // Create done button
-            let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissController))
-
-            // Set navigationItem
-            controller.navigationItem.rightBarButtonItem = doneBarButton
+//            let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissController))
+//
+//            // Set navigationItem
+//            controller.navigationItem.rightBarButtonItem = doneBarButton
 
             // Create navigationController
             let naviController = UINavigationController(rootViewController: controller)
