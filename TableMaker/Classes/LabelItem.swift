@@ -11,8 +11,8 @@ import Foundation
 
 open class LabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: DataTableItem<T,U,V>{
     
-    public var textFont: UIFont?
-    public var detailTextFont: UIFont?
+    public var textFont: UIFont? = UIFont.preferredFont(forTextStyle: .body)
+    public var detailTextFont: UIFont? = UIFont.preferredFont(forTextStyle: .body)
     
     open override var identifier: String {
         return "labelCellReuseId"
@@ -26,13 +26,9 @@ open class LabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringC
         let cell = UITableViewCell(style: .value1, reuseIdentifier: identifier)
         cell.selectionStyle = .none
         cell.accessoryType = accessoryType
-        if let textFont = textFont {
-            cell.textLabel?.font = textFont
-        }
+        cell.textLabel?.font = textFont
+        cell.detailTextLabel?.font = detailTextFont
         
-        if let detailTextFont = detailTextFont {
-            cell.detailTextLabel?.font = detailTextFont
-        }
         return cell
     }
     

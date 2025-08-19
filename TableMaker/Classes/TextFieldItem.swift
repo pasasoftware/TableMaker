@@ -112,15 +112,6 @@ open class TextFieldItem<T, U: Equatable & CustomStringConvertible>: DataTableIt
         cell.textField.textAlignment = .right
         cell.textField.keyboardType = keyboardType
         cell.selectionStyle = .none
-        if let leftView {
-            cell.textField.leftView = leftView
-            cell.textField.leftViewMode = .always
-        }
-        
-        if let rightView {
-            cell.textField.rightView = rightView
-            cell.textField.rightViewMode = .always
-        }
         
         return cell
     }
@@ -136,6 +127,12 @@ open class TextFieldItem<T, U: Equatable & CustomStringConvertible>: DataTableIt
         cell.textField.text = convertValue()
         cell.textField.delegate = self
         cell.textField.returnKeyType = .done
+        cell.textField.leftView = leftView ?? nil
+        cell.textField.leftViewMode = leftView != nil ? .always : .never
+        
+        cell.textField.rightView = rightView ?? nil
+        cell.textField.rightViewMode = rightView != nil ? .always : .never
+        
         cell.setNeedsUpdateConstraints()
     }
     

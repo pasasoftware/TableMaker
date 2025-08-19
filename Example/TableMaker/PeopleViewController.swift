@@ -70,12 +70,20 @@ class PeopleViewController: DetailViewController {
         
         let item1 = LabelItem2(people){$0.fullName}
         item1.title = "Name"
+        item1.textFont = UIFont.boldSystemFont(ofSize: 20)
+        item1.detailTextFont = UIFont.boldSystemFont(ofSize: 15)
         
         let item2 = ActionLabelItem2(people){$0.fullName}
         item2.title = "Action Label"
         item2.accessoryType = .disclosureIndicator
         item2.action = { item in
             print("action label tap")
+            
+            let c = UIViewController()
+            c.view.backgroundColor = .systemGreen
+            
+            self.navigationController?.pushViewController(c, animated: true)
+            
         }
         
         let firstNameItem = TextFieldItem(people, host: self){$0.firstName}
@@ -96,6 +104,10 @@ class PeopleViewController: DetailViewController {
             self?.reloadItem(item1)
         }
         
+        let rightLabel = UILabel()
+        rightLabel.text = "%"
+        rightLabel.sizeToFit()
+        
         let ageItem = TextFieldItem(people, host: self){$0.age}
         ageItem.title = "Age"
         ageItem.keyboardType = .numberPad
@@ -104,6 +116,7 @@ class PeopleViewController: DetailViewController {
         }
         ageItem.converter = IntStringConverter()
         ageItem.addValidator(GreaterThanValidator(0))
+        ageItem.rightView = rightLabel
         
         petItem = StringSegmentItem2(people){$0.pet}
         petItem.host = self
@@ -303,13 +316,13 @@ class PeopleViewController: DetailViewController {
         comoboItem.setter = { $0.pet = $1 }
         //        comoboItem.style = .actionSheet
         comoboItem.style = .popover
+        
         if #available(iOS 13.0, *) {
             comoboItem.tableViewStyle = .insetGrouped
         } else {
             comoboItem.tableViewStyle = .plain
         }
         let section14 = TableSection([selectorItem, comoboItem])
-        
         
         sections = [section1,
                     section2,
