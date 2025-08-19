@@ -24,6 +24,9 @@ open class ComboItem<T, U: Equatable & CustomStringConvertible>: TextFieldItem<T
     /// Determine the style of options, default is "Push".
     public var style = SelectorItemStyle.push
     
+    /// UITableView.Style the style of options, default is "plain".
+    public var tableViewStyle: UITableView.Style = .plain
+    
     // MARK: - Constructor
     public init(_ data: T, host: TableItemHost, values: [U], getter: @escaping (T) -> U) {
         self.values = values
@@ -131,7 +134,7 @@ extension ComboItem {
     public func createSelectorViewControlelr() -> SelectorViewController<U>? {
 
         // Create selector view controller
-        let selectorVC = SelectorViewController<U>()
+        let selectorVC = SelectorViewController<U>(style: tableViewStyle)
 
         // Set title
         selectorVC.title = title

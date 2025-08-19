@@ -16,6 +16,7 @@ public protocol Selectable where Self: TableItem {
     associatedtype V: CustomStringConvertible
 
     var values: [U] { get }
+    var tableViewStyle: UITableView.Style { get }
 
     // Show as action sheet
     func showActionSheetWith(sourceView: UIView?, dataTableItem: DataTableItem<T, U, V>)
@@ -107,7 +108,7 @@ extension Selectable {
     public func createSelectorViewControlelr(dataTableItem: DataTableItem<T, U, V>) -> SelectorViewController<U>? {
 
         // Create selector view controller
-        let selectorVC = SelectorViewController<U>()
+        let selectorVC = SelectorViewController<U>(style: tableViewStyle)
 
         // Set title
         selectorVC.title = title

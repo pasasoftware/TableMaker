@@ -293,13 +293,21 @@ class PeopleViewController: DetailViewController {
         selectorItem.setter = { $0.pet = $1 }
         selectorItem.host = self
         //        selectorItem.style = .actionSheet
-        selectorItem.style = .popover
+//        selectorItem.style = .popover
+        if #available(iOS 13.0, *) {
+            selectorItem.tableViewStyle = .insetGrouped
+        }
         
         let comoboItem = ComboItem(people, host: self, values: ["🐶","🐷","🐻"]){$0.pet}
         comoboItem.title = "Pet"
         comoboItem.setter = { $0.pet = $1 }
         //        comoboItem.style = .actionSheet
         comoboItem.style = .popover
+        if #available(iOS 13.0, *) {
+            comoboItem.tableViewStyle = .insetGrouped
+        } else {
+            comoboItem.tableViewStyle = .plain
+        }
         let section14 = TableSection([selectorItem, comoboItem])
         
         

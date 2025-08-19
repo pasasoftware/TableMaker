@@ -104,6 +104,7 @@ extension SelectorViewController {
 
         if (indices.count > 0) {
             tableView.reloadRows(at: indices, with: .automatic)
+            cancelEvent()
         }
     }
 
@@ -116,5 +117,17 @@ extension SelectorViewController {
             return datas[selectedIndex]
         }
         return nil
+    }
+    
+    private func cancelEvent(_ animated: Bool = true) {
+        guard let nav = navigationController else {
+            dismiss(animated: animated)
+            return
+        }
+        if nav.viewControllers.count >= 2 {
+            nav.popViewController(animated: animated)
+        } else {
+            nav.dismiss(animated: animated)
+        }
     }
 }
