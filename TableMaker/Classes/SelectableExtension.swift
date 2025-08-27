@@ -120,11 +120,11 @@ extension Selectable {
         selectorVC.formatter = dataTableItem.getDescription(with:)
 
         // Set selectedValue
-        selectorVC.selectedValue = dataTableItem.getValue()
+        selectorVC.selectedValues = [dataTableItem.getValue()]
 
         // Set call back: Set value to 'T' when selctor VC disappear
         selectorVC.disappearing = { (value) in
-            if let value = value {
+            if let value = value?.first {
                 dataTableItem.setValue(with: value)
             }
         }

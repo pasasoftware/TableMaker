@@ -45,4 +45,6 @@ class People {
     var introduction: String?
     
     var iconImage: UIImage! = UIImage(named: "headIcon")
+    
+    var multiSelector: [Int] = [1111, 2222, 3333]
 }
