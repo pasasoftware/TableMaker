@@ -13,7 +13,7 @@ public enum MultiSelectorItemStyle {
     case popover
 }
 
-open class MultiSelectorItem<T, U: Collection & Equatable & CustomStringConvertible, V: CustomStringConvertible & Equatable>: LabelItem<T, U, V> where U.Element: Equatable & CustomStringConvertible {
+open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible & Equatable>: LabelItem<T, [U], [V]> {
 
     // MARK: - Property
     open override var accessoryType: UITableViewCell.AccessoryType {
@@ -23,14 +23,12 @@ open class MultiSelectorItem<T, U: Collection & Equatable & CustomStringConverti
     open override var autoReload: Bool {
         return true
     }
-    
-    public typealias S = U.Element
 
     /// As datasource of options.
-    public var values: U
+    public var values: [U]
     
     /// As formatter of options.
-    public var optionFormatter: ((S) -> String?)?
+    public var optionFormatter: ((U) -> String?)?
 
     /// Determine the style of options, default is "Push".
     public var style = MultiSelectorItemStyle.push
@@ -39,7 +37,7 @@ open class MultiSelectorItem<T, U: Collection & Equatable & CustomStringConverti
     public var tableViewStyle: UITableView.Style = .plain
 
     // MARK: - Constructor
-    public init(_ data: T, host: TableItemHost, values: U, getter: @escaping (T) -> U) {
+    public init(_ data: T, host: TableItemHost, values: [U], getter: @escaping (T) -> [U]) {
         self.values = values
         super.init(data, getter: getter)
         self.host = host
@@ -73,7 +71,7 @@ extension MultiSelectorItem {
 
 extension MultiSelectorItem {
     
-    public func showPush(_ controller: UIViewController, dataTableItem: DataTableItem<T, U, V>) {
+    public func showPush(_ controller: UIViewController, dataTableItem: DataTableItem<T, [U], [V]>) {
         // Get source controlelr
         let sourceVC = dataTableItem.host?.viewController
 
@@ -97,7 +95,7 @@ extension MultiSelectorItem {
         }
     }
 
-    public func showPopover(_ controller: UIViewController, sourceView: UIView?, dataTableItem: DataTableItem<T, U, V>) {
+    public func showPopover(_ controller: UIViewController, sourceView: UIView?, dataTableItem: DataTableItem<T, [U], [V]>) {
 
         // Sorce controlelr is nil then return directly
         guard let source =  dataTableItem.host?.viewController else { return }
@@ -120,10 +118,10 @@ extension MultiSelectorItem {
     }
 
 
-    public func createSelectorViewControlelr(dataTableItem: DataTableItem<T, U, V>) -> SelectorViewController<S>? {
+    public func createSelectorViewControlelr(dataTableItem: DataTableItem<T, [U], [V]>) -> SelectorViewController<U>? {
 
         // Create selector view controller
-        let selectorVC = SelectorViewController<S>(style: tableViewStyle)
+        let selectorVC = SelectorViewController<U>(style: tableViewStyle)
 
         // Set title
         selectorVC.title = title
@@ -131,19 +129,17 @@ extension MultiSelectorItem {
         selectorVC.isMulSelect = true
 
         // Set datasource
-        selectorVC.datas = (values as? [S]) ?? []
+        selectorVC.datas = values
 
         // Set formatter
         selectorVC.formatter = optionFormatter
 
         // Set selectedValue
-        selectorVC.selectedValues = (dataTableItem.getValue() as? [S]) ?? []
+        selectorVC.selectedValues = dataTableItem.getValue()
 
         // Set call back: Set value to 'T' when selctor VC disappear
         selectorVC.disappearing = { (value) in
-            if let value = value as? U {
-                dataTableItem.setValue(with: value)
-            }
+            dataTableItem.setValue(with: value ?? [])
         }
         return selectorVC
     }
@@ -151,4 +147,4 @@ extension MultiSelectorItem {
 }
 
 //Todo SelectorItem2 should be SelectorItem, but swift don't support it
-public typealias MultiSelectorItem2<T, U: Collection & Equatable & CustomStringConvertible> = MultiSelectorItem<T, U, U> where U.Element: Equatable & CustomStringConvertible
+public typealias MultiSelectorItem2<T, U: Equatable & CustomStringConvertible> = MultiSelectorItem<T, U, U>
