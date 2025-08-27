@@ -146,11 +146,11 @@ extension ComboItem {
         selectorVC.formatter = getDescription(with:)
 
         // Set selectedValue
-        selectorVC.selectedValue = getValue()
+        selectorVC.selectedValues = [getValue()]
 
         // Set call back: Set value to 'T' when selctor VC disappear
         selectorVC.disappearing = {[weak self] (value) in
-            if let value = value {
+            if let value = value?.first {
                 self?.setValue(with: value)
             }
         }

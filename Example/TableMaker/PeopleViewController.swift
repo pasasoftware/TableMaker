@@ -322,7 +322,26 @@ class PeopleViewController: DetailViewController {
         } else {
             comoboItem.tableViewStyle = .plain
         }
-        let section14 = TableSection([selectorItem, comoboItem])
+        
+        let multiValues: [Int] = [1111, 2222, 3333, 4444, 5555]
+        let multiSelectorItem = MultiSelectorItem2(people, host: self, values: multiValues, getter: { $0.multiSelector })
+        multiSelectorItem.title = "Multi"
+        multiSelectorItem.setter = { $0.multiSelector = $1 }
+        // option：定制里面选项的显示格式
+        multiSelectorItem.optionFormatter = {
+            "Number: " + String($0)
+        }
+        // formatter定制当前行的显示格式
+        multiSelectorItem.formatter = {
+            $0.compactMap({ String($0) }).joined(separator: ", ")
+        }
+        if #available(iOS 13.0, *) {
+            multiSelectorItem.tableViewStyle = .insetGrouped
+        } else {
+            multiSelectorItem.tableViewStyle = .plain
+        }
+        
+        let section14 = TableSection([selectorItem, comoboItem, multiSelectorItem])
         
         sections = [section1,
                     section2,

@@ -18,20 +18,12 @@ open class SelectorViewController<T: CustomStringConvertible & Equatable>: UITab
     public var datas: [T] = []
 
     public var formatter: ((T) -> String?)?
+    
+    public var isMulSelect = false
 
-    public var selectedIndex = -1
+    public var selectedValues: [T]?
 
-    public var selectedValue: T? {
-        didSet {
-            guard   let value = selectedValue,
-                    let index = datas.firstIndex(of: value) else {
-                return
-            }
-            selectedIndex = index
-        }
-    }
-
-    public var disappearing: ((T?) -> Void)?
+    public var disappearing: (([T]?) -> Void)?
 
     // MARK: UIViewController lifecycle
 
@@ -39,7 +31,7 @@ open class SelectorViewController<T: CustomStringConvertible & Equatable>: UITab
         super.viewWillDisappear(animated)
 
         if let disappearing = disappearing {
-            disappearing(getSelectedValue())
+            disappearing(selectedValues)
         }
     }
 
@@ -61,14 +53,13 @@ open class SelectorViewController<T: CustomStringConvertible & Equatable>: UITab
     }
 
     func configureCell(cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let row = indexPath.row
+        if row < datas.count {
+            let item = datas[row]
 
-        if indexPath.row == selectedIndex {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
+            cell.textLabel?.text = getDescription(value: datas[indexPath.row])
+            cell.accessoryType = selectedValues?.contains(item) == true ? .checkmark : .none
         }
-
-        cell.textLabel?.text = getDescription(value: datas[indexPath.row])
     }
 
     // MARK: UITableViewDelegate
@@ -88,35 +79,21 @@ extension SelectorViewController {
     }
 
     private func selectItem(_ tableView: UITableView, indexPath: IndexPath) {
-        let preSelectedIndex = selectedIndex
-        selectedIndex = indexPath.row
-
-        var indices: [IndexPath] = []
-        if indexPath.row >= 0 && indexPath.row < datas.count {
-            indices.append(indexPath)
+        let row = indexPath.row
+        if row < datas.count {
+            let model = datas[row]
+            if isMulSelect == false { // 单选
+                selectedValues = [model]
+                cancelEvent()
+                return
+            }
+            if selectedValues?.contains(model) == true {
+                selectedValues?.removeAll(where: { $0 == model })
+            } else {
+                selectedValues?.append(model)
+            }
+            tableView.reloadData()
         }
-
-        if  preSelectedIndex >= 0 &&
-            preSelectedIndex < datas.count &&
-            preSelectedIndex != selectedIndex {
-            indices.append(IndexPath(row: preSelectedIndex, section: 0))
-        }
-
-        if (indices.count > 0) {
-            tableView.reloadRows(at: indices, with: .automatic)
-            cancelEvent()
-        }
-    }
-
-    private func getSelectedValue() -> T? {
-        if (datas.count == 0) {
-            return nil
-        }
-
-        if (selectedIndex >= 0 && selectedIndex < datas.count) {
-            return datas[selectedIndex]
-        }
-        return nil
     }
     
     private func cancelEvent(_ animated: Bool = true) {
