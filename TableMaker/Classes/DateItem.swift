@@ -11,7 +11,7 @@ import UIKit
 
 open class DateCell: UITableViewCell {
     // MARK: - Property
-    public var doneAction: ((Date) -> Void)?
+    public var doneAction: ((Date?) -> Void)?
     
     public lazy var datePicker: UIDatePicker = {
         return UIDatePicker()
@@ -55,13 +55,15 @@ open class DateCell: UITableViewCell {
     }
 }
 
-open class DateItem<T, U: Equatable & CustomStringConvertible> : LabelItem<T, U, Date> {
+open class DateItem<T, U: Equatable & CustomStringConvertible> : LabelItem<T, U, Date?> {
     // MARK: - Property
     open override var identifier: String {
         return "dateCellReuseId"
     }
     
     public var datePickerMode: UIDatePicker.Mode = .date
+    
+    public var timeZome: TimeZone?
     
     open override var autoReload: Bool {
         return true
@@ -94,8 +96,9 @@ open class DateItem<T, U: Equatable & CustomStringConvertible> : LabelItem<T, U,
         tableView.deselectRow(at: indexPath, animated: true)
         let cell = tableView.cellForRow(at: indexPath) as! DateCell
         let date = convertValue()
-        cell.datePicker.date = date
+        cell.datePicker.date = date ?? Date()
         cell.datePicker.datePickerMode = datePickerMode
+        cell.datePicker.timeZone = timeZome
         cell.doneAction = {[weak self] (date) in
             self?.setValue(withConverted: date)
             cell.resignFirstResponder()
@@ -103,17 +106,20 @@ open class DateItem<T, U: Equatable & CustomStringConvertible> : LabelItem<T, U,
         cell.becomeFirstResponder()
     }
     
-    open override func getDescription(withConverted value: Date) -> String? {
+    open override func getDescription(withConverted value: Date?) -> String? {
+        guard let value else {
+            return nil
+        }
         guard let formatter = formatter else {
             switch datePickerMode {
             case .date:
-                return DateFormatter.localizedString(from: value, dateStyle: .short, timeStyle: .none)
+                return dateFormattedString(from: value, dateStyle: .short, timeStyle: .none)
             case .time:
-                return DateFormatter.localizedString(from: value, dateStyle: .none, timeStyle: .short)
+                return dateFormattedString(from: value, dateStyle: .none, timeStyle: .short)
             case .dateAndTime:
-                return DateFormatter.localizedString(from: value, dateStyle: .short, timeStyle: .short)
+                return dateFormattedString(from: value, dateStyle: .short, timeStyle: .short)
             default :
-                return DateFormatter.localizedString(from: value, dateStyle: .short, timeStyle: .none)
+                return dateFormattedString(from: value, dateStyle: .short, timeStyle: .none)
             }
         }
         
@@ -124,5 +130,15 @@ open class DateItem<T, U: Equatable & CustomStringConvertible> : LabelItem<T, U,
         if let cell = host?.getCell(self) as? DateCell {
             cell.resignFirstResponder()
         }
+    }
+    
+    private func dateFormattedString(from date: Date, dateStyle dstyle: DateFormatter.Style, timeStyle tstyle: DateFormatter.Style) -> String? {
+        let formatter = DateFormatter()
+        formatter.dateStyle = dstyle
+        formatter.timeStyle = tstyle
+        if let timeZome {
+            formatter.timeZone = timeZome
+        }
+        return formatter.string(from: date)
     }
 }

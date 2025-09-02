@@ -261,6 +261,8 @@ class PeopleViewController: DetailViewController {
         dateItem.setter = {
             $0.birthday = $1
         }
+        dateItem.datePickerMode = .dateAndTime
+        dateItem.timeZome = TimeZone(identifier: "UTC")
         dateItem.title = "Birthday"
 
         let section9 = TableSection([dateItem])

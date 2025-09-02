@@ -28,7 +28,7 @@ class People {
     
     var hobby: Int = 0
 
-    var birthday: Date = Date()
+    var birthday: Date? = nil
 
     var isTeenager: Bool = false
     
