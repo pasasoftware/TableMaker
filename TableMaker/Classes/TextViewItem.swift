@@ -28,20 +28,24 @@ extension UITextView{
 }
 
 public class TextViewCell: UITableViewCell{
-    let textView: UITextView!
+    lazy var textView: UITextView = {
+        let textView = UITextView()
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.backgroundColor = .clear
+        textView.font = .preferredFont(forTextStyle: .body)
+        textView.isEditable = true
+        return textView
+    }()
     
     public init(reuseIdentifier: String?) {
-        textView = UITextView()
-        textView.font = UIFont.preferredFont(forTextStyle: .body)
-        textView.translatesAutoresizingMaskIntoConstraints = false
         super.init(style: .value1, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(textView)
-        NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-            textView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
-            textView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-            textView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
-            ])
+        
+        textView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+        textView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+        textView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8).isActive = true
+        textView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8).isActive = true
+        
         textView.setPlaceholder()
     }
     
@@ -57,14 +61,27 @@ public class TextViewCell: UITableViewCell{
 
 open class TextViewItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,String?>, UITextViewDelegate{
     public var placeholder: String?
-    private var preTextViewHeight: CGFloat?
+    
+    public var minHeight: CGFloat = 44.0
+    public var enlargedHeight: CGFloat? = 120.0
+    public var maxHeight: CGFloat? = 180.0
+    private var isTextViewEditing: Bool = false
+    
+    var tableView: UITableView? {
+        guard let host else {
+            return nil
+        }
+        
+        return host.tableView
+    }
+    
     open override var identifier: String {
         return "textViewCellReuseId"
     }
     
     public override init(_ data: T, getter: @escaping (T) -> U) {
         super.init(data, getter: getter)
-        height = UITableView.automaticDimension
+        height = minHeight
     }
     
     open override var autoReload: Bool{
@@ -86,11 +103,7 @@ open class TextViewItem<T, U: Equatable & CustomStringConvertible>: DataTableIte
         label.text = placeholder
         cell.textView.text = convertValue()
         cell.textView.delegate = self
-        if height != UITableView.automaticDimension {
-            cell.textView.isScrollEnabled = true
-        }else{
-            cell.textView.isScrollEnabled = false
-        }
+        textViewHeight(for: cell, at: indexPath)
     }
     
     open override func endEdit() {
@@ -99,33 +112,68 @@ open class TextViewItem<T, U: Equatable & CustomStringConvertible>: DataTableIte
         }
     }
     
+    public func textViewDidBeginEditing(_ textView: UITextView) {
+        guard let tableView else {
+            return
+        }
+         
+        isTextViewEditing = true
+        guard let cell = textView.superview?.superview as? TextViewCell,
+              let indexPath = tableView.indexPath(for: cell) else { return }
+         
+        textViewHeight(for: cell, at: indexPath)
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
     public func textViewDidEndEditing(_ textView: UITextView) {
+        guard let tableView else {
+            return
+        }
+        
+        isTextViewEditing = false
+        guard let cell = textView.superview?.superview as? TextViewCell,
+              let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        textViewHeight(for: cell, at: indexPath)
+        tableView.beginUpdates()
+        tableView.endUpdates()
+        
         setValue(withConverted: textView.text)
     }
     
     public func textViewDidChange(_ textView: UITextView) {
-        if preTextViewHeight == 0 {
-            preTextViewHeight = textViewHeight(textView)
-        }else{
-            //when  add line or reduce line
-            if preTextViewHeight != textViewHeight(textView){
-                preTextViewHeight = textViewHeight(textView)
-                guard let host = host else {
-                    return
-                }
-                let tableView = host.tableView!
-                tableView.beginUpdates()
-                tableView.endUpdates()
-                tableView.scrollToRow(at: host.indexPath(for: self)!, at: .bottom, animated: true)
-            }
+        guard let tableView else {
+            return
         }
+        
+        guard let cell = textView.superview?.superview as? TextViewCell,
+              let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        textViewHeight(for: cell, at: indexPath)
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
     
-    public func textViewHeight(_ textView: UITextView) -> CGFloat{
-        //use textView.contentSize when newline is no right.
-        let size = CGSize(width: textView.bounds.width, height: CGFloat.greatestFiniteMagnitude)
-        let height = textView.sizeThatFits(size).height + textView.textContainerInset.bottom
-        return height
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            return true
+        }
+        return true
+    }
+    
+    public func textViewHeight(for cell: TextViewCell, at indexPath: IndexPath) {
+        guard let tableView else {
+            return
+        }
+        
+        let width = tableView.bounds.width - 16
+        let contentHeight = cell.textView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
+        cell.textView.isScrollEnabled = maxHeight != nil && contentHeight > maxHeight! - 16
+        
+        let targetHeight = isTextViewEditing ? max(contentHeight + 16, enlargedHeight ?? contentHeight + 16) : contentHeight + 16
+
+        height = maxHeight != nil ? min(maxHeight!, max(minHeight, targetHeight)) : max(minHeight, targetHeight)
     }
 }
 
