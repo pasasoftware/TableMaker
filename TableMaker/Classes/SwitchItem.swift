@@ -27,7 +27,7 @@ public class SwitchCell: UITableViewCell{
     }
 }
 
-public class SwitchItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,Bool> {
+public class SwitchItem<T, U: Equatable>: DataTableItem<T,U,Bool> {
     
     public override var identifier: String {
         return "switchCellReuseId"

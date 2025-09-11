@@ -69,7 +69,7 @@ public class TextFieldCell: UITableViewCell {
 
 //formatter won't work on TextFieldItem
 //todo should set Converter directly when u is primitive types such as Int or Float
-open class TextFieldItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,String?>, UITextFieldDelegate{
+open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFieldDelegate{
     public var placeholder: String?
     
     open override var identifier: String {

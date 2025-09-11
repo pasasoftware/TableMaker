@@ -9,7 +9,7 @@
 import UIKit
 import Foundation
 
-open class CheckItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,Bool> {
+open class CheckItem<T, U: Equatable>: DataTableItem<T,U,Bool> {
     
     open override var identifier: String {
         return "CheckCellReuseId"

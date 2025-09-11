@@ -13,7 +13,7 @@ public enum MultiSelectorItemStyle {
     case popover
 }
 
-open class MultiSelectorItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible & Equatable>: LabelItem<T, [U], [V]> {
+open class MultiSelectorItem<T, U: Equatable, V>: LabelItem<T, [U], [V]> {
 
     // MARK: - Property
     open override var accessoryType: UITableViewCell.AccessoryType {
@@ -147,4 +147,4 @@ extension MultiSelectorItem {
 }
 
 //Todo SelectorItem2 should be SelectorItem, but swift don't support it
-public typealias MultiSelectorItem2<T, U: Equatable & CustomStringConvertible> = MultiSelectorItem<T, U, U>
+public typealias MultiSelectorItem2<T, U: Equatable> = MultiSelectorItem<T, U, U>

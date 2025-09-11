@@ -59,7 +59,7 @@ public class TextViewCell: UITableViewCell{
     
 }
 
-open class TextViewItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,String?>, UITextViewDelegate{
+open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextViewDelegate{
     public var placeholder: String?
     
     public var minHeight: CGFloat = 44.0

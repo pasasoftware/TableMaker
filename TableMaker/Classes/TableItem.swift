@@ -98,7 +98,7 @@ open class TableItem: NSObject {
 }
 
 
-open class DataTableItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: TableItem, UIPopoverPresentationControllerDelegate{
+open class DataTableItem<T, U: Equatable, V>: TableItem, UIPopoverPresentationControllerDelegate{
 
     public weak var host: TableItemHost?
 
@@ -212,7 +212,14 @@ open class DataTableItem<T, U: Equatable & CustomStringConvertible, V: CustomStr
 
     public func getDescription(withConverted value: V) -> String? {
         guard let formatter = formatter else {
-            return value.description
+            // 检查value是否遵守CustomStringConvertible协议
+            if let convertibleValue = value as? CustomStringConvertible {
+                // 遵守协议，调用其自定义的description
+                return convertibleValue.description
+            } else {
+                // 不遵守协议，无法转换，返回nil
+                return nil
+            }
         }
 
         return formatter(value)

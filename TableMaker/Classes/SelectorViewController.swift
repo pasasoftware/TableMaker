@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-open class SelectorViewController<T: CustomStringConvertible & Equatable>: UITableViewController {
+open class SelectorViewController<T: Equatable>: UITableViewController {
 
     // MARK: - Property
 
@@ -73,7 +73,14 @@ extension SelectorViewController {
 
     private func getDescription(value: T) -> String? {
         guard let formatter = formatter else {
-            return value.description
+            // 检查value是否遵守CustomStringConvertible协议
+            if let convertibleValue = value as? CustomStringConvertible {
+                // 遵守协议，调用其自定义的description
+                return convertibleValue.description
+            } else {
+                // 不遵守协议，无法转换，返回nil
+                return nil
+            }
         }
         return formatter(value)
     }

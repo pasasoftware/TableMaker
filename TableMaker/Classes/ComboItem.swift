@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-open class ComboItem<T, U: Equatable & CustomStringConvertible>: TextFieldItem<T,U> {
+open class ComboItem<T, U: Equatable>: TextFieldItem<T,U> {
     
     public typealias V = String?
     

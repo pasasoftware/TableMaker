@@ -11,7 +11,7 @@ import UIKit
 
 //let TweakLabelMargin: CGFloat = 5.0
 
-open class TweakLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: DataTableItem<T, U, V> {
+open class TweakLabelItem<T, U: Equatable, V>: DataTableItem<T, U, V> {
     open override var identifier: String {
         return "TweakLabelCellReuseId"
     }
@@ -38,7 +38,7 @@ open class TweakLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomSt
 }
 
 //todo TweakLabelItem2 should be TweakLabelItem, but swift don't support it
-public typealias TweakLabelItem2<T, U: Equatable & CustomStringConvertible> = TweakLabelItem<T, U, U>
+public typealias TweakLabelItem2<T, U: Equatable> = TweakLabelItem<T, U, U>
 
 open class TweakLabelCell: UITableViewCell {
 
