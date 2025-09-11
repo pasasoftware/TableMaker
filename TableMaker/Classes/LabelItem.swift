@@ -9,7 +9,7 @@
 import UIKit
 import Foundation
 
-open class LabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: DataTableItem<T,U,V>{
+open class LabelItem<T, U: Equatable, V>: DataTableItem<T,U,V>{
     
     public var textFont: UIFont? = UIFont.preferredFont(forTextStyle: .body)
     public var detailTextFont: UIFont? = UIFont.preferredFont(forTextStyle: .body)
@@ -40,5 +40,5 @@ open class LabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringC
 }
 
 //todo LabelItem2 should be LabelItem, but swift don't support it
-public typealias LabelItem2<T,U: Equatable & CustomStringConvertible> = LabelItem<T,U,U>
+public typealias LabelItem2<T,U: Equatable> = LabelItem<T,U,U>
 

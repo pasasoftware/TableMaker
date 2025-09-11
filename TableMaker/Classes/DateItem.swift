@@ -55,7 +55,7 @@ open class DateCell: UITableViewCell {
     }
 }
 
-open class DateItem<T, U: Equatable & CustomStringConvertible> : LabelItem<T, U, Date?> {
+open class DateItem<T, U: Equatable> : LabelItem<T, U, Date?> {
     // MARK: - Property
     open override var identifier: String {
         return "dateCellReuseId"

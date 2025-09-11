@@ -16,7 +16,7 @@ public enum SelectorItemStyle {
     case popover
 }
 
-open class SelectorItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible & Equatable>: LabelItem<T, U, V>, Selectable {
+open class SelectorItem<T, U: Equatable, V>: LabelItem<T, U, V>, Selectable {
 
     // MARK: - Property
     open override var accessoryType: UITableViewCell.AccessoryType {
@@ -72,4 +72,4 @@ extension SelectorItem {
 }
 
 //Todo SelectorItem2 should be SelectorItem, but swift don't support it
-public typealias SelectorItem2<T, U: Equatable & CustomStringConvertible> = SelectorItem<T, U, U>
+public typealias SelectorItem2<T, U: Equatable> = SelectorItem<T, U, U>

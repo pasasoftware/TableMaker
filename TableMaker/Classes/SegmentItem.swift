@@ -29,7 +29,7 @@ public class SegmentCell: UITableViewCell {
     }
 }
 
-public class SegmentItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: DataTableItem<T,U,V> {
+public class SegmentItem<T, U: Equatable, V>: DataTableItem<T,U,V> {
     public var items: [U]?
     
     public override var identifier: String {
@@ -81,7 +81,7 @@ public class SegmentItem<T, U: Equatable & CustomStringConvertible, V: CustomStr
 }
 
 
-public class StringSegmentItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: SegmentItem<T,U,V> {
+public class StringSegmentItem<T, U: Equatable, V>: SegmentItem<T,U,V> {
    
     override func insertSegment(_ segment: UISegmentedControl, at index: Int, item: U) {
         let title = getDescription(with: item)
@@ -89,9 +89,9 @@ public class StringSegmentItem<T, U: Equatable & CustomStringConvertible, V: Cus
     }
 }
 
-public typealias StringSegmentItem2<T, U: Equatable & CustomStringConvertible> = StringSegmentItem<T,U,U>
+public typealias StringSegmentItem2<T, U: Equatable> = StringSegmentItem<T,U,U>
 
-public class ImageSegmentItem<T, U: Equatable & CustomStringConvertible>: SegmentItem<T,U,UIImage?> {
+public class ImageSegmentItem<T, U: Equatable>: SegmentItem<T,U,UIImage?> {
     
     override func insertSegment(_ segment: UISegmentedControl, at index: Int, item: U) {
         let image = convertValue(with: item)

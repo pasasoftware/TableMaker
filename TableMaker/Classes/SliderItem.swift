@@ -44,7 +44,7 @@ public class SliderCell: UITableViewCell {
     
 }
 
-public class SliderItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,Float> {
+public class SliderItem<T, U: Equatable>: DataTableItem<T,U,Float> {
     public var maxValue: Float = 1
     public var minValue: Float = 0
     public var minimumValueImage: UIImage?

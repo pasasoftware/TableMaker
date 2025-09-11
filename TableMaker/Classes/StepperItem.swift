@@ -37,7 +37,7 @@ public class StepperCell: UITableViewCell{
     }
 }
 
-public class StepperItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,Double>{
+public class StepperItem<T, U: Equatable>: DataTableItem<T,U,Double>{
     public var maxValue: Double = 1
     public var minValue: Double = 0
     public var stepValue: Double = 0.1

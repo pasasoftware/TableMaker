@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-open class ActionLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomStringConvertible>: LabelItem<T,U,V>
+open class ActionLabelItem<T, U: Equatable, V>: LabelItem<T,U,V>
 {
     open override var identifier: String {
         return "actionLabelCellReuseId"
@@ -34,4 +34,4 @@ open class ActionLabelItem<T, U: Equatable & CustomStringConvertible, V: CustomS
     
 }
 
-public typealias ActionLabelItem2<T,U: Equatable & CustomStringConvertible> = ActionLabelItem<T,U,U>
+public typealias ActionLabelItem2<T,U: Equatable> = ActionLabelItem<T,U,U>

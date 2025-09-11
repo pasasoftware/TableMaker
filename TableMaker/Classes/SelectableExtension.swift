@@ -12,8 +12,8 @@ import UIKit
 public protocol Selectable where Self: TableItem {
 
     associatedtype T
-    associatedtype U: CustomStringConvertible & Equatable
-    associatedtype V: CustomStringConvertible
+    associatedtype U: Equatable
+    associatedtype V
 
     var values: [U] { get }
     var tableViewStyle: UITableView.Style { get }

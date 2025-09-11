@@ -32,7 +32,7 @@ public class ImageCell: UITableViewCell{
     
 }
 
-public class ImageItem<T, U: Equatable & CustomStringConvertible>: DataTableItem<T,U,UIImage>{
+public class ImageItem<T, U: Equatable>: DataTableItem<T,U,UIImage>{
 //    public var image:UIImage!
 
     public override var identifier: String {
