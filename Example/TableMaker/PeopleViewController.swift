@@ -268,6 +268,8 @@ class PeopleViewController: DetailViewController {
         let section9 = TableSection([dateItem])
         
         let textItem = TextViewItem(people){$0.leaveMessage}
+        textItem.numberOfLines = 3
+//        textItem.maxHeight = 250
         textItem.host = self
         textItem.placeholder = "Pelase enter the leave message"
         textItem.setter = {
