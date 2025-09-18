@@ -38,7 +38,7 @@ class People {
     
     var stepValue: Double = 2.0
     
-    var leaveMessage: String = ""
+    var leaveMessage: String = "aaa\nbbb\nccc\nddddaaa\nbbb\nccc\nddddaaa\nbbb\nccc\ndddd"
     
     var leaveTime: Date = Date()
 

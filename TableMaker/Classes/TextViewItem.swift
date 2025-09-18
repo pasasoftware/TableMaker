@@ -108,12 +108,14 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
         label.text = placeholder
         cell.textView.text = convertValue()
         cell.textView.delegate = self
-
-        if maxHeight == nil {
-            maxHeight = numberOfLines > 0 ? calculateMaxHeight(for: cell.textView, numberOfLines: numberOfLines) : nil
-        }
         
+        // 先设置高度，再检查是否需要滚动
         textViewHeight(for: cell, at: indexPath)
+        
+        // 强制刷新滚动状态，确保初始状态正确
+        DispatchQueue.main.async {
+            self.updateScrollState(for: cell)
+        }
     }
     
     open override func endEdit() {
@@ -155,9 +157,6 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
             placeholderLabel.isHidden = !textView.text.isEmpty
         }
         
-        if maxHeight == nil {
-            maxHeight = numberOfLines > 0 ? calculateMaxHeight(for: textView, numberOfLines: numberOfLines) : nil
-        }
         textViewHeight(for: cell, at: indexPath)
         tableView.beginUpdates()
         tableView.endUpdates()
@@ -180,8 +179,12 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
         let textContainerInset = textView.textContainerInset
         let verticalInset = textContainerInset.top + textContainerInset.bottom
         let cellVerticalPadding: CGFloat = 16.0 // 与 TextViewCell 约束一致
-        let extraBuffer: CGFloat = 4.0
-        return (lineHeight + lineSpacing) * CGFloat(numberOfLines) + verticalInset + cellVerticalPadding + extraBuffer
+        
+        // 更精确的高度计算，确保不会有内容漏出
+        let totalLineHeight = lineHeight * CGFloat(numberOfLines)
+        let totalLineSpacing = lineSpacing * max(0, CGFloat(numberOfLines - 1))
+        
+        return totalLineHeight + totalLineSpacing + verticalInset + cellVerticalPadding
     }
     
     public func textViewHeight(for cell: TextViewCell, at indexPath: IndexPath) {
@@ -189,9 +192,78 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
         
         let width = tableView.bounds.width - 16
         let contentHeight = cell.textView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
-        cell.textView.isScrollEnabled = maxHeight != nil && contentHeight > maxHeight! - 16
+        let cellVerticalPadding: CGFloat = 16.0
         
-        let targetHeight = isTextViewEditing ? max(contentHeight + 16, enlargedHeight ?? contentHeight + 16) : contentHeight + 16
-        height = maxHeight != nil ? min(maxHeight!, max(minHeight, targetHeight)) : max(minHeight, targetHeight)
+        // 确定实际使用的最大高度
+        var effectiveMaxHeight: CGFloat?
+        if let userMaxHeight = maxHeight {
+            // 优先使用外部设置的 maxHeight
+            effectiveMaxHeight = userMaxHeight
+        } else if numberOfLines > 0 {
+            // 当 maxHeight 为 nil 且 numberOfLines > 0 时，计算最大高度
+            effectiveMaxHeight = calculateMaxHeight(for: cell.textView, numberOfLines: numberOfLines)
+        }
+        // 如果 maxHeight 为 nil 且 numberOfLines = 0，则不限制高度
+        
+        // 修复滚动启用逻辑
+        if let effectiveMaxHeight = effectiveMaxHeight {
+            let maxContentHeight = effectiveMaxHeight - cellVerticalPadding
+            let shouldEnableScroll = contentHeight > maxContentHeight
+            cell.textView.isScrollEnabled = shouldEnableScroll
+            
+            // 如果启用滚动，强制刷新布局
+            if shouldEnableScroll {
+                cell.textView.setNeedsLayout()
+                cell.textView.layoutIfNeeded()
+                cell.textView.layoutManager.ensureLayout(for: cell.textView.textContainer)
+            }
+        } else {
+            cell.textView.isScrollEnabled = false
+        }
+        
+        let targetHeight = isTextViewEditing ? max(contentHeight + cellVerticalPadding, enlargedHeight ?? contentHeight + cellVerticalPadding) : contentHeight + cellVerticalPadding
+        height = effectiveMaxHeight != nil ? min(effectiveMaxHeight!, max(minHeight, targetHeight)) : max(minHeight, targetHeight)
+    }
+    
+    private func updateScrollState(for cell: TextViewCell) {
+        // 确定实际使用的最大高度
+        var effectiveMaxHeight: CGFloat?
+        if let userMaxHeight = maxHeight {
+            // 优先使用外部设置的 maxHeight
+            effectiveMaxHeight = userMaxHeight
+        } else if numberOfLines > 0 {
+            // 当 maxHeight 为 nil 且 numberOfLines > 0 时，计算最大高度
+            effectiveMaxHeight = calculateMaxHeight(for: cell.textView, numberOfLines: numberOfLines)
+        }
+        
+        guard let effectiveMaxHeight = effectiveMaxHeight else {
+            cell.textView.isScrollEnabled = false
+            return
+        }
+        
+        let cellVerticalPadding: CGFloat = 16.0
+        let width = cell.textView.bounds.width
+        let contentHeight = cell.textView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
+        let maxContentHeight = effectiveMaxHeight - cellVerticalPadding
+        
+        cell.textView.isScrollEnabled = contentHeight > maxContentHeight
+        
+        // 强制刷新 TextView 的布局和 contentSize
+        if cell.textView.isScrollEnabled {
+            cell.textView.setNeedsLayout()
+            cell.textView.layoutIfNeeded()
+            
+            // 确保 contentSize 被正确计算
+            let textContainer = cell.textView.textContainer
+            let layoutManager = cell.textView.layoutManager
+            
+            // 强制重新计算文本布局
+            layoutManager.ensureLayout(for: textContainer)
+            
+            // 如果内容超出显示范围，滚动到顶部
+            if cell.textView.contentSize.height > cell.textView.bounds.height {
+                cell.textView.setContentOffset(CGPoint.zero, animated: false)
+            }
+        }
     }
 }
