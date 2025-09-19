@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-public class TableSection {
+open class TableSection {
     public var header: String?
     public var footer: String?
     public var headerView: UIView?
