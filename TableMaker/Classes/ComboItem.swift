@@ -18,6 +18,10 @@ open class ComboItem<T, U: Equatable>: TextFieldItem<T,U> {
         return .detailButton
     }
     
+    open override var autoReload: Bool{
+        return true
+    }
+    
     /// As datasource of options.
     public var values: [U]
     
@@ -76,6 +80,7 @@ extension ComboItem {
         alert.addAction(UIAlertAction(title: Localizable.Cancel.localized, style: .cancel, handler: nil))
         for item in values {
             alert.addAction(UIAlertAction(title: getDescription(with: item), style: .default){[weak self] _ in
+                self?.host?.tableView.endEditing(true)
                 self?.setValue(with: item)
             })
         }
@@ -151,6 +156,7 @@ extension ComboItem {
         // Set call back: Set value to 'T' when selctor VC disappear
         selectorVC.disappearing = {[weak self] (value) in
             if let value = value?.first {
+                self?.host?.tableView.endEditing(true)
                 self?.setValue(with: value)
             }
         }
