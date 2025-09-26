@@ -11,7 +11,7 @@ import UIKit
 
 //action should weak reference
 public class ActionItem: TableItem {
-    public var action: ((ActionItem) -> Void)?
+    public var action: ((ActionItem, IndexPath) -> Void)?
     public var image: UIImage?
     public override var identifier: String {
         return "actionCellReuseId"
@@ -23,10 +23,10 @@ public class ActionItem: TableItem {
 
     // MARK: - Constructor
     public convenience init(title: String?, action: @escaping () -> Void) {
-        self.init(title: title, image: nil, action: {a in action()})
+        self.init(title: title, image: nil, action: { _,_ in action()})
     }
 
-    public init(title: String?, image: UIImage?, action: @escaping (ActionItem) -> Void) {
+    public init(title: String?, image: UIImage?, action: @escaping (ActionItem, IndexPath) -> Void) {
         super.init()
         self.title = title
         self.image = image
@@ -47,6 +47,6 @@ public class ActionItem: TableItem {
 
     public override func select(_ tableView: UITableView, at indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        action?(self)
+        action?(self, indexPath)
     }
 }

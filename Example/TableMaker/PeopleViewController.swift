@@ -169,7 +169,7 @@ class PeopleViewController: DetailViewController {
         }
         
         // Action item demo
-        let item4 = ActionItem(title: "Action item with image", image: UIImage(named: "bulb")){ai in}
+        let item4 = ActionItem(title: "Action item with image", image: UIImage(named: "bulb")){ _,_ in }
         let item5 = ActionItem(title: "Action item"){}
         
         let section1 = TableSection([item1, item2, ageItem, petItem, hobbyItem, phoneItem, emailItem, genderItem])
