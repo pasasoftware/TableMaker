@@ -54,7 +54,16 @@ public class TextViewCell: UITableViewCell{
     }
     
     public override func prepareForReuse() {
+        super.prepareForReuse()
         textView.delegate = nil
+        textView.text = ""
+        textView.isScrollEnabled = true
+        textView.setContentOffset(CGPoint.zero, animated: false)
+        
+        // 重置 placeholder 状态
+        if let placeholderLabel = textView.subviews.first(where: { $0 is UILabel }) as? UILabel {
+            placeholderLabel.isHidden = false
+        }
     }
     
 }
@@ -112,9 +121,19 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
         // 先设置高度，再检查是否需要滚动
         textViewHeight(for: cell, at: indexPath)
         
-        // 强制刷新滚动状态，确保初始状态正确
+        // 修复刷新后滚动问题：确保在下一个 runloop 中更新滚动状态
         DispatchQueue.main.async {
+            // 重置 TextView 的内部状态
+            cell.textView.setNeedsLayout()
+            cell.textView.layoutIfNeeded()
+            
+            // 更新滚动状态
             self.updateScrollState(for: cell)
+            
+            // 确保 contentOffset 正确
+            if cell.textView.isScrollEnabled && cell.textView.contentSize.height > cell.textView.bounds.height {
+                cell.textView.setContentOffset(CGPoint.zero, animated: false)
+            }
         }
     }
     
@@ -157,9 +176,22 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
             placeholderLabel.isHidden = !textView.text.isEmpty
         }
         
+        // 保存当前光标位置
+        let selectedRange = textView.selectedRange
+        
         textViewHeight(for: cell, at: indexPath)
         tableView.beginUpdates()
         tableView.endUpdates()
+        
+        // 恢复光标位置
+        textView.selectedRange = selectedRange
+        
+        // 滚动到光标位置，确保光标可见
+        DispatchQueue.main.async {
+            if textView.isFirstResponder {
+                textView.scrollRangeToVisible(selectedRange)
+            }
+        }
     }
     
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -205,24 +237,14 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
         }
         // 如果 maxHeight 为 nil 且 numberOfLines = 0，则不限制高度
         
-        // 修复滚动启用逻辑
-        if let effectiveMaxHeight = effectiveMaxHeight {
-            let maxContentHeight = effectiveMaxHeight - cellVerticalPadding
-            let shouldEnableScroll = contentHeight > maxContentHeight
-            cell.textView.isScrollEnabled = shouldEnableScroll
-            
-            // 如果启用滚动，强制刷新布局
-            if shouldEnableScroll {
-                cell.textView.setNeedsLayout()
-                cell.textView.layoutIfNeeded()
-                cell.textView.layoutManager.ensureLayout(for: cell.textView.textContainer)
-            }
-        } else {
-            cell.textView.isScrollEnabled = false
-        }
+        // 临时启用滚动以确保 contentSize 正确计算
+        cell.textView.isScrollEnabled = true
         
         let targetHeight = isTextViewEditing ? max(contentHeight + cellVerticalPadding, enlargedHeight ?? contentHeight + cellVerticalPadding) : contentHeight + cellVerticalPadding
         height = effectiveMaxHeight != nil ? min(effectiveMaxHeight!, max(minHeight, targetHeight)) : max(minHeight, targetHeight)
+        
+        // 立即更新滚动状态，避免延迟
+        updateScrollState(for: cell)
     }
     
     private func updateScrollState(for cell: TextViewCell) {
@@ -246,10 +268,12 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
         let contentHeight = cell.textView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)).height
         let maxContentHeight = effectiveMaxHeight - cellVerticalPadding
         
-        cell.textView.isScrollEnabled = contentHeight > maxContentHeight
+        // 判断是否需要滚动
+        let needsScrolling = contentHeight > maxContentHeight
+        cell.textView.isScrollEnabled = needsScrolling
         
-        // 强制刷新 TextView 的布局和 contentSize
-        if cell.textView.isScrollEnabled {
+        if needsScrolling {
+            // 强制刷新 TextView 的布局和 contentSize
             cell.textView.setNeedsLayout()
             cell.textView.layoutIfNeeded()
             
@@ -258,10 +282,28 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
             let layoutManager = cell.textView.layoutManager
             
             // 强制重新计算文本布局
+            let textRange = NSRange(location: 0, length: cell.textView.text.count)
+            layoutManager.invalidateLayout(forCharacterRange: textRange, actualCharacterRange: nil)
             layoutManager.ensureLayout(for: textContainer)
             
-            // 如果内容超出显示范围，滚动到顶部
-            if cell.textView.contentSize.height > cell.textView.bounds.height {
+            // 重新计算 contentSize
+            let usedRect = layoutManager.usedRect(for: textContainer)
+            let insets = cell.textView.textContainerInset
+            let newContentSize = CGSize(width: usedRect.width + insets.left + insets.right,
+                                      height: usedRect.height + insets.top + insets.bottom)
+            
+            // 手动设置 contentSize 确保滚动正常工作
+            if newContentSize.height != cell.textView.contentSize.height {
+                cell.textView.contentSize = newContentSize
+            }
+            
+            // 只在非编辑状态或初始化时滚动到顶部
+            if !cell.textView.isFirstResponder && cell.textView.contentSize.height > cell.textView.bounds.height {
+                cell.textView.setContentOffset(CGPoint.zero, animated: false)
+            }
+        } else {
+            // 不需要滚动时，确保 contentOffset 为零（仅在非编辑状态）
+            if !cell.textView.isFirstResponder {
                 cell.textView.setContentOffset(CGPoint.zero, animated: false)
             }
         }
