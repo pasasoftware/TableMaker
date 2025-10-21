@@ -320,6 +320,9 @@ class PeopleViewController: DetailViewController {
         comoboItem.setter = { $0.pet = $1 }
         //        comoboItem.style = .actionSheet
         comoboItem.style = .popover
+        comoboItem.fetchValues = { _ in
+            ["222","444","666"]
+        }
         
         if #available(iOS 13.0, *) {
             comoboItem.tableViewStyle = .insetGrouped

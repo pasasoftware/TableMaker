@@ -22,14 +22,25 @@ open class ComboItem<T, U: Equatable>: TextFieldItem<T,U> {
         return true
     }
     
-    /// As datasource of options.
+    /// As datasource of options. (default)
     public var values: [U]
+    
+    /// Fetch of options dynamically.
+    public var fetchValues: ((T) -> [U])?
     
     /// Determine the style of options, default is "Push".
     public var style = SelectorItemStyle.push
     
     /// UITableView.Style the style of options, default is "plain".
     public var tableViewStyle: UITableView.Style = .plain
+    
+    /// The currently used options.
+    private var showValues: [U] {
+        if let fetchValues {
+            return fetchValues(data)
+        }
+        return values
+    }
     
     // MARK: - Constructor
     public init(_ data: T, host: TableItemHost, values: [U], getter: @escaping (T) -> U) {
@@ -78,7 +89,7 @@ extension ComboItem {
 
         // Add action to alert
         alert.addAction(UIAlertAction(title: Localizable.Cancel.localized, style: .cancel, handler: nil))
-        for item in values {
+        for item in showValues {
             alert.addAction(UIAlertAction(title: getDescription(with: item), style: .default){[weak self] _ in
                 self?.host?.tableView.endEditing(true)
                 self?.setValue(with: item)
@@ -145,7 +156,7 @@ extension ComboItem {
         selectorVC.title = title
 
         // Set datasource
-        selectorVC.datas = values
+        selectorVC.datas = showValues
 
         // Set formatter
         selectorVC.formatter = getDescription(with:)
