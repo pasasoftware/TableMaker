@@ -47,4 +47,35 @@ class People {
     var iconImage: UIImage! = UIImage(named: "headIcon")
     
     var multiSelector: [Int] = [1111, 2222, 3333]
+    
+    var level: Int = 0
+    
+    var nationality: Country?
+}
+
+
+enum Country {
+    case usa
+    case canada
+    case uk
+    case china
+    case japan
+    case korea
+    
+    var title: String {
+        switch self {
+        case .usa:
+            return "United States"
+        case .canada:
+            return "Canada"
+        case .uk:
+            return "United Kingdom"
+        case .china:
+            return "China"
+        case .japan:
+            return "Japan"
+        case .korea:
+            return "South Korea"
+        }
+    }
 }

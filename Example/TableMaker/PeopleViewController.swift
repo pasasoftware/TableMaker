@@ -66,7 +66,49 @@ class PeopleViewController: DetailViewController {
         
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneTapped))
         navigationItem.rightBarButtonItem = doneButton
-        
+                
+        if #available(iOS 15.0, *) {
+            let langItem = MenusItem(
+                people,
+                groups: [
+                    MenuGroup(title: "levels", values: [1, 2, 3,4])
+                ],
+                host: self,
+                getter: { $0.level }
+            )
+            
+            langItem.title = "level"
+            langItem.setter = { $0.level = $1! }
+            langItem.formatter = { "\($0!)" }
+            
+            let nationItem = MenusItem(
+                people,
+                groups: [
+                    MenuGroup(title: "North America", values: [Country.usa, Country.canada]),
+                    MenuGroup(title: "Europe", values: [Country.uk]),
+                    MenuGroup(title: "Asia", values: [Country.china, Country.japan, Country.korea])
+                ],
+                host: self,
+                getter: { $0.nationality }
+            )
+            nationItem.title = "Nationality"
+            nationItem.emptyDescription = "Select Nation"
+            nationItem.clearOptionTitle = "UnSelect"
+            nationItem.setter = {
+                $0.nationality = $1
+            }
+            nationItem.formatter = {
+                $0?.title
+            }
+            nationItem.clearOptionTitle = "clear"
+            
+            let section0 = TableSection([ nationItem])
+            section0.headerView = customView(title: "Section0 Header")
+            section0.headerHeight = 80
+            section0.footerView = customView(title: "Section0 Footer")
+            section0.footerHeight = 40
+            sections.append(section0)
+        }
         
         let item1 = LabelItem2(people){$0.fullName}
         item1.title = "Name"
@@ -350,20 +392,22 @@ class PeopleViewController: DetailViewController {
         
         let section14 = TableSection([selectorItem, comoboItem, multiSelectorItem])
         
-        sections = [section1,
-                    section2,
-                    section3,
-                    section4,
-                    section5,
-                    section6,
-                    section7,
-                    section8,
-                    section9,
-                    section10,
-                    //                    section11,
-            section12,
-            section13,
-            section14]
+        sections.append(contentsOf: [
+            section1,
+                        section2,
+                        section3,
+                        section4,
+                        section5,
+                        section6,
+                        section7,
+                        section8,
+                        section9,
+                        section10,
+                        //                    section11,
+                section12,
+                section13,
+                section14
+        ])
     }
     
     override func valueDidChange(_ tableItem: TableItem) {
