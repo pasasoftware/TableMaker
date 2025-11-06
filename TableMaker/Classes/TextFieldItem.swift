@@ -10,60 +10,117 @@ import UIKit
 import Foundation
 
 public class TextFieldCell: UITableViewCell {
-    let textField: UITextField!
     
-    private var textLeadingEmptyTitle: NSLayoutConstraint!
-    private var textLeading: NSLayoutConstraint!
+    private enum Layout {
+        static let textFieldMinWidth: CGFloat = 80
+        static let labelToTextFieldSpacing: CGFloat = 5
+    }
     
-    private var textYEmptyTitle: NSLayoutConstraint!
-    private var textY: NSLayoutConstraint!
+    public let textField: UITextField = {
+        let field = UITextField()
+        field.clearButtonMode = .whileEditing
+        field.translatesAutoresizingMaskIntoConstraints = false
+        field.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return field
+    }()
     
-    private var textFieldMinWidth: NSLayoutConstraint!
+    private var isShowingTitleLayout: Bool = false
+    
+    private lazy var textLeadingEmptyTitle: NSLayoutConstraint = {
+        let margin = contentView.layoutMarginsGuide
+        return textField.leadingAnchor.constraint(equalTo: margin.leadingAnchor)
+    }()
+    
+    private lazy var textLeading: NSLayoutConstraint = {
+        return textField.leadingAnchor.constraint(
+            greaterThanOrEqualTo: textLabel!.trailingAnchor,
+            constant: Layout.labelToTextFieldSpacing
+        )
+    }()
+    
+    private lazy var textYEmptyTitle: NSLayoutConstraint = {
+        textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+    }()
+    
+    private lazy var textY: NSLayoutConstraint = {
+        textField.lastBaselineAnchor.constraint(equalTo: textLabel!.lastBaselineAnchor)
+    }()
+    
+    private lazy var textFieldMinWidth: NSLayoutConstraint = {
+        textField.widthAnchor.constraint(
+            greaterThanOrEqualToConstant: Layout.textFieldMinWidth
+        )
+    }()
     
     public init(reuseIdentifier: String?) {
-        textField = UITextField()
-        textField.clearButtonMode = .whileEditing
-        textField.translatesAutoresizingMaskIntoConstraints = false
         super.init(style: .value1, reuseIdentifier: reuseIdentifier)
-        
-        let margin = contentView.layoutMarginsGuide
-        
-        textLeadingEmptyTitle = textField.leadingAnchor.constraint(equalTo: margin.leadingAnchor)
-        textLeading = textField.leadingAnchor.constraint(greaterThanOrEqualTo: textLabel!.trailingAnchor, constant: 5) // 修改 constant 为 5
-        
-        textY = textField.lastBaselineAnchor.constraint(equalTo: textLabel!.lastBaselineAnchor)
-        textYEmptyTitle = textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
-        
-        textFieldMinWidth = textField.widthAnchor.constraint(greaterThanOrEqualToConstant: 80)
-        
-        contentView.addSubview(textField)
-        
-        textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        textLabel?.setContentCompressionResistancePriority(.required, for: .horizontal)
-        
-        margin.trailingAnchor.constraint(equalTo: textField.trailingAnchor).isActive = true
-        
-        textFieldMinWidth.isActive = true
+        setupUI()
+        setupConstraints()
     }
     
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("not implemented")
+        super.init(coder: aDecoder)
+        setupUI()
+        setupConstraints()
     }
     
-    public override func prepareForReuse() {
-        textField.delegate = nil
+    private func setupUI() {
+        contentView.addSubview(textField)
+        textLabel?.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+    
+    private func setupConstraints() {
+        let margin = contentView.layoutMarginsGuide
+        
+        NSLayoutConstraint.activate([
+            margin.trailingAnchor.constraint(equalTo: textField.trailingAnchor),
+            textFieldMinWidth
+        ])
     }
     
     public override func updateConstraints() {
         super.updateConstraints()
-        if let _ = textLabel?.text {
+        
+        let shouldShowTitle = textLabel?.text?.isEmpty == false
+        
+        guard shouldShowTitle != isShowingTitleLayout else {
+            return
+        }
+        
+        if shouldShowTitle {
             NSLayoutConstraint.deactivate([textLeadingEmptyTitle, textYEmptyTitle])
             NSLayoutConstraint.activate([textLeading, textY])
+            isShowingTitleLayout = true
         } else {
             NSLayoutConstraint.deactivate([textLeading, textY])
             NSLayoutConstraint.activate([textLeadingEmptyTitle, textYEmptyTitle])
+            isShowingTitleLayout = false
         }
+    }
+    
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        textField.delegate = nil
+        
+        textField.text = nil
+        textField.placeholder = nil
+        
+        textField.leftView = nil
+        textField.leftViewMode = .never
+        textField.rightView = nil
+        textField.rightViewMode = .never
+        
+        textField.textAlignment = .natural
+        textField.returnKeyType = .default
+    }
+    
+    public func configure(title: String?, placeholder: String? = nil, text: String? = nil) {
+        textLabel?.text = title
+        textField.placeholder = placeholder
+        textField.text = text
+        setNeedsUpdateConstraints()
     }
 }
 
@@ -121,19 +178,21 @@ open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFie
         guard let cell = cell as? TextFieldCell else {
             fatalError("textField cell is not set correctly")
         }
-        cell.textLabel?.text = title
+        
         cell.textField.textAlignment = textAlignment
-        cell.textField.placeholder = placeholder
-        cell.textField.text = convertValue()
         cell.textField.delegate = self
         cell.textField.returnKeyType = .done
-        cell.textField.leftView = leftView ?? nil
-        cell.textField.leftViewMode = leftView != nil ? .always : .never
+        if let leftView = leftView {
+            cell.textField.leftView = leftView
+            cell.textField.leftViewMode = .always
+        }
         
-        cell.textField.rightView = rightView ?? nil
-        cell.textField.rightViewMode = rightView != nil ? .always : .never
+        if let rightView = rightView {
+            cell.textField.rightView = rightView
+            cell.textField.rightViewMode = .always
+        }
         
-        cell.setNeedsUpdateConstraints()
+        cell.configure(title: title, placeholder: placeholder, text: convertValue())
     }
     
     open override func endEdit() {

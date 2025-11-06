@@ -25,6 +25,7 @@ class People {
     var age: Int = 18
     
     var pet: String = "🐶"
+    var secondpet: String?
     
     var hobby: Int = 0
 

@@ -347,12 +347,12 @@ class PeopleViewController: DetailViewController {
         }
         let section13 = TableSection([imageItem])
         
-        let selectorItem = SelectorItem2(people, host: self, values: ["🐶","🐷","🐻"]){$0.pet}
-        selectorItem.title = "Pet"
-        selectorItem.setter = { $0.pet = $1 }
+        let selectorItem = SelectorItem2(people, host: self, values: ["🐶","🐷","🐻"]){$0.secondpet}
+        selectorItem.title = "Pet 2"
+        selectorItem.setter = { $0.secondpet = $1 }
         selectorItem.host = self
-        //        selectorItem.style = .actionSheet
 //        selectorItem.style = .popover
+                selectorItem.style = .actionSheet
         if #available(iOS 13.0, *) {
             selectorItem.tableViewStyle = .insetGrouped
         }
@@ -390,7 +390,22 @@ class PeopleViewController: DetailViewController {
             multiSelectorItem.tableViewStyle = .plain
         }
         
-        let section14 = TableSection([selectorItem, comoboItem, multiSelectorItem])
+        let rightLabel2 = UILabel()
+        rightLabel2.text = "%%"
+        rightLabel2.sizeToFit()
+        
+        let ageItem2 = TextFieldItem(people, host: self){$0.age}
+        ageItem2.title = "Agsdasdase"
+        ageItem2.keyboardType = .numberPad
+        ageItem2.setter = {
+            $0.age = $1
+        }
+        ageItem2.converter = IntStringConverter()
+        ageItem2.addValidator(GreaterThanValidator(0))
+        ageItem2.rightView = rightLabel2
+        
+        
+        let section14 = TableSection([ageItem2, selectorItem, comoboItem, multiSelectorItem])
         
         sections.append(contentsOf: [
             section1,

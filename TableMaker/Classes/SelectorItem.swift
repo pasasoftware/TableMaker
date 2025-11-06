@@ -49,14 +49,17 @@ open class SelectorItem<T, U: Equatable, V>: LabelItem<T, U, V>, Selectable {
         // Different behaviors based on style
         switch style {
         case .actionSheet:
-            showActionSheetWith(sourceView: getSourceView(tableView: tableView, indexPath: indexPath), dataTableItem: self)
+            if let (sourceView, bounds) = getSourceView(tableView: tableView, indexPath: indexPath) {
+                showActionSheetWith(sourceView: sourceView, rect: bounds, dataTableItem: self)
+            }
+//
         case .push:
             if let vc = createSelectorViewControlelr(dataTableItem: self) {
                 showPush(vc, dataTableItem: self)
             }
         case .popover:
-            if let vc = createSelectorViewControlelr(dataTableItem: self) {
-                showPopover(vc, sourceView: getSourceView(tableView: tableView, indexPath: indexPath), dataTableItem: self)
+            if let vc = createSelectorViewControlelr(dataTableItem: self), let (sourceView, bounds) = getSourceView(tableView: tableView, indexPath: indexPath) {
+                showPopover(vc, sourceView: sourceView, rect: bounds, dataTableItem: self)
             }
         }
     }
@@ -65,9 +68,17 @@ open class SelectorItem<T, U: Equatable, V>: LabelItem<T, U, V>, Selectable {
 extension SelectorItem {
 
     // MARK: - Utils
-    private func getSourceView(tableView: UITableView, indexPath: IndexPath) -> UIView? {
-        let cell = tableView.cellForRow(at: indexPath)
-        return cell?.detailTextLabel
+    private func getSourceView(tableView: UITableView, indexPath: IndexPath) -> (UIView, CGRect)? {
+        guard let cell = tableView.cellForRow(at: indexPath), let label = cell.detailTextLabel else { return nil }
+
+        if let text = label.text, !text.isEmpty {
+            return (label, label.bounds)
+        } else {
+            let rect = CGRect(x: cell.contentView.bounds.maxX - 10,
+                                   y: cell.contentView.bounds.midY - 8,
+                                   width: 16, height: 16)
+            return (cell, rect)
+        }
     }
 }
 

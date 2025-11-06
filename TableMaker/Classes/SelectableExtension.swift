@@ -19,9 +19,9 @@ public protocol Selectable where Self: TableItem {
     var tableViewStyle: UITableView.Style { get }
 
     // Show as action sheet
-    func showActionSheetWith(sourceView: UIView?, dataTableItem: DataTableItem<T, U, V>)
+    func showActionSheetWith(sourceView: UIView?, rect: CGRect, dataTableItem: DataTableItem<T, U, V>)
     func showPush(_ controller: UIViewController, dataTableItem: DataTableItem<T, U, V>)
-    func showPopover(_ controller: UIViewController, sourceView: UIView?, dataTableItem: DataTableItem<T, U, V>)
+    func showPopover(_ controller: UIViewController, sourceView: UIView, rect: CGRect, dataTableItem: DataTableItem<T, U, V>)
     func createSelectorViewControlelr(dataTableItem: DataTableItem<T, U, V>) -> SelectorViewController<U>?
 }
 
@@ -30,7 +30,7 @@ extension Selectable {
     // MARK: - Show Selector
 
     // Show as action sheet
-    public func showActionSheetWith(sourceView: UIView?, dataTableItem: DataTableItem<T, U, V>) {
+    public func showActionSheetWith(sourceView: UIView?, rect: CGRect, dataTableItem: DataTableItem<T, U, V>) {
         // Options are nil or host not 'UIViewController' and return directly
         guard let vc = dataTableItem.host?.viewController else {
                 return
@@ -43,7 +43,7 @@ extension Selectable {
         // AlertController need to set popoverPresentationController's souceview and source rect.
         if let sourceView = sourceView {
             alert.popoverPresentationController?.sourceView = sourceView
-            alert.popoverPresentationController?.sourceRect = sourceView.bounds
+            alert.popoverPresentationController?.sourceRect = rect
         }
 
         // Add action to alert
@@ -82,7 +82,7 @@ extension Selectable {
         }
     }
 
-    public func showPopover(_ controller: UIViewController, sourceView: UIView?, dataTableItem: DataTableItem<T, U, V>) {
+    public func showPopover(_ controller: UIViewController, sourceView: UIView, rect: CGRect, dataTableItem: DataTableItem<T, U, V>) {
 
         // Sorce controlelr is nil then return directly
         guard let source =  dataTableItem.host?.viewController else { return }
@@ -92,16 +92,15 @@ extension Selectable {
 
         // Set navigationController popover related
         nav.modalPresentationStyle = .popover
-        let popover = nav.popoverPresentationController
-        popover?.delegate = dataTableItem
-        if let sourceView = sourceView {
-            // Set sourceView and source rect
-            popover?.sourceView = sourceView
-            popover?.sourceRect = sourceView.bounds
+        if let popover = nav.popoverPresentationController {
+            popover.delegate = dataTableItem
 
-            // Present
-            source.present(nav, animated: true, completion: nil)
+            popover.sourceView = sourceView
+            popover.sourceRect = rect
+            popover.permittedArrowDirections = .any
         }
+        // Present
+        source.present(nav, animated: true, completion: nil)
     }
 
 
