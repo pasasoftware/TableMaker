@@ -12,39 +12,32 @@ import Foundation
 public class TextFieldCell: UITableViewCell {
     
     private enum Layout {
+        static let stackSpacing: CGFloat = 8
         static let textFieldMinWidth: CGFloat = 80
-        static let labelToTextFieldSpacing: CGFloat = 5
     }
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return label
+    }()
     
     public let textField: UITextField = {
         let field = UITextField()
         field.clearButtonMode = .whileEditing
-        field.translatesAutoresizingMaskIntoConstraints = false
         field.setContentHuggingPriority(.defaultLow, for: .horizontal)
         field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return field
     }()
     
-    private var isShowingTitleLayout: Bool = false
-    
-    private lazy var textLeadingEmptyTitle: NSLayoutConstraint = {
-        let margin = contentView.layoutMarginsGuide
-        return textField.leadingAnchor.constraint(equalTo: margin.leadingAnchor)
-    }()
-    
-    private lazy var textLeading: NSLayoutConstraint = {
-        return textField.leadingAnchor.constraint(
-            greaterThanOrEqualTo: textLabel!.trailingAnchor,
-            constant: Layout.labelToTextFieldSpacing
-        )
-    }()
-    
-    private lazy var textYEmptyTitle: NSLayoutConstraint = {
-        textField.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
-    }()
-    
-    private lazy var textY: NSLayoutConstraint = {
-        textField.lastBaselineAnchor.constraint(equalTo: textLabel!.lastBaselineAnchor)
+    private lazy var stackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [titleLabel, textField])
+        stack.axis = .horizontal
+        stack.alignment = .fill
+        stack.spacing = Layout.stackSpacing
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
     }()
     
     private lazy var textFieldMinWidth: NSLayoutConstraint = {
@@ -54,48 +47,35 @@ public class TextFieldCell: UITableViewCell {
     }()
     
     public init(reuseIdentifier: String?) {
-        super.init(style: .value1, reuseIdentifier: reuseIdentifier)
+        super.init(style: .default, reuseIdentifier: reuseIdentifier)
         setupUI()
-        setupConstraints()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setupUI()
-        setupConstraints()
     }
     
     private func setupUI() {
-        contentView.addSubview(textField)
-        textLabel?.setContentCompressionResistancePriority(.required, for: .horizontal)
-    }
-    
-    private func setupConstraints() {
-        let margin = contentView.layoutMarginsGuide
+        contentView.addSubview(stackView)
         
+        let margin = contentView.layoutMarginsGuide
         NSLayoutConstraint.activate([
-            margin.trailingAnchor.constraint(equalTo: textField.trailingAnchor),
+            stackView.leadingAnchor.constraint(equalTo: margin.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: margin.trailingAnchor),
+            stackView.topAnchor.constraint(equalTo: margin.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: margin.bottomAnchor),
             textFieldMinWidth
         ])
     }
     
-    public override func updateConstraints() {
-        super.updateConstraints()
-        
-        let shouldShowTitle = textLabel?.text?.isEmpty == false
-        
-        guard shouldShowTitle != isShowingTitleLayout else {
-            return
-        }
-        
-        if shouldShowTitle {
-            NSLayoutConstraint.deactivate([textLeadingEmptyTitle, textYEmptyTitle])
-            NSLayoutConstraint.activate([textLeading, textY])
-            isShowingTitleLayout = true
-        } else {
-            NSLayoutConstraint.deactivate([textLeading, textY])
-            NSLayoutConstraint.activate([textLeadingEmptyTitle, textYEmptyTitle])
-            isShowingTitleLayout = false
+    fileprivate func clearRightViewLeftView() {
+        // 移除所有非 titleLabel 和 textField 的子视图
+        stackView.arrangedSubviews.forEach { view in
+            if view !== titleLabel && view !== textField {
+                stackView.removeArrangedSubview(view)
+                view.removeFromSuperview()
+            }
         }
     }
     
@@ -103,24 +83,39 @@ public class TextFieldCell: UITableViewCell {
         super.prepareForReuse()
         
         textField.delegate = nil
-        
         textField.text = nil
         textField.placeholder = nil
+        titleLabel.text = nil
         
-        textField.leftView = nil
-        textField.leftViewMode = .never
-        textField.rightView = nil
-        textField.rightViewMode = .never
+        clearRightViewLeftView()
         
         textField.textAlignment = .natural
         textField.returnKeyType = .default
     }
     
     public func configure(title: String?, placeholder: String? = nil, text: String? = nil) {
-        textLabel?.text = title
+        titleLabel.text = title
+        titleLabel.isHidden = title?.isEmpty ?? true
         textField.placeholder = placeholder
         textField.text = text
-        setNeedsUpdateConstraints()
+    }
+    
+    public func setLeftView(_ view: UIView) {
+        view.setContentHuggingPriority(.required, for: .horizontal)
+        view.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        // 找到 titleLabel 的位置，在其后插入
+        if let titleIndex = stackView.arrangedSubviews.firstIndex(of: titleLabel) {
+            stackView.insertArrangedSubview(view, at: titleIndex + 1)
+        } else {
+            stackView.insertArrangedSubview(view, at: 0)
+        }
+    }
+    
+    public func setRightView(_ view: UIView) {
+        view.setContentHuggingPriority(.required, for: .horizontal)
+        view.setContentCompressionResistancePriority(.required, for: .horizontal)
+        stackView.addArrangedSubview(view)
     }
 }
 
@@ -182,14 +177,14 @@ open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFie
         cell.textField.textAlignment = textAlignment
         cell.textField.delegate = self
         cell.textField.returnKeyType = .done
+        
+        // 只在有值时才设置 leftView 和 rightView
         if let leftView = leftView {
-            cell.textField.leftView = leftView
-            cell.textField.leftViewMode = .always
+            cell.setLeftView(leftView)
         }
         
         if let rightView = rightView {
-            cell.textField.rightView = rightView
-            cell.textField.rightViewMode = .always
+            cell.setRightView(rightView)
         }
         
         cell.configure(title: title, placeholder: placeholder, text: convertValue())
@@ -222,12 +217,10 @@ open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFie
             label.sizeToFit()
             
             if rightView == nil || leftView != nil {
-                cell.textField.rightViewMode = .always
-                cell.textField.rightView = label
+                cell.setRightView(label)
                 errorViewSide = .right
             } else {
-                cell.textField.leftViewMode = .always
-                cell.textField.leftView = label
+                cell.setLeftView(label)
                 errorViewSide = .left
             }
         }
@@ -235,10 +228,20 @@ open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFie
     
     private func clearError() {
         guard let cell = host?.getCell(self) as? TextFieldCell else { return }
-        cell.textField.leftViewMode = leftView != nil ? .always : .never
-        cell.textField.rightViewMode = rightView != nil ? .always : .never
-        cell.textField.leftView = leftView
-        cell.textField.rightView = rightView
+        
+        // 移除所有非 titleLabel 和 textField 的子视图，重新设置
+        cell.clearRightViewLeftView()
+        
+        // 重新设置原始的 leftView 和 rightView
+        if let leftView = leftView {
+            cell.setLeftView(leftView)
+        }
+        
+        if let rightView = rightView {
+            cell.setRightView(rightView)
+        }
+        
+        errorViewSide = .none
     }
     
     override func willSetValue() {

@@ -129,7 +129,6 @@ class PeopleViewController: DetailViewController {
         }
         
         let firstNameItem = TextFieldItem(people, host: self){$0.firstName}
-        firstNameItem.title = "First Name"
         firstNameItem.setter = {
             $0.firstName = $1
         }
@@ -214,7 +213,7 @@ class PeopleViewController: DetailViewController {
         let item4 = ActionItem(title: "Action item with image", image: UIImage(named: "bulb")){ _,_ in }
         let item5 = ActionItem(title: "Action item"){}
         
-        let section1 = TableSection([item1, item2, ageItem, petItem, hobbyItem, phoneItem, emailItem, genderItem])
+        let section1 = TableSection([ firstNameItem, lastNameItem,item1, item2, ageItem, petItem, hobbyItem, phoneItem, emailItem, genderItem])
         section1.headerView = customView(title: "Section1 Header")
         section1.headerHeight = 80
         section1.footerView = customView(title: "Section1 Footer")
