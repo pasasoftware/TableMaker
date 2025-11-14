@@ -102,7 +102,7 @@ class PeopleViewController: DetailViewController {
             }
             nationItem.clearOptionTitle = "clear"
             
-            let section0 = TableSection([ nationItem])
+            let section0 = TableSection([langItem, nationItem])
             section0.headerView = customView(title: "Section0 Header")
             section0.headerHeight = 80
             section0.footerView = customView(title: "Section0 Footer")
@@ -426,7 +426,7 @@ class PeopleViewController: DetailViewController {
     
     override func valueDidChange(_ tableItem: TableItem) {
         people.introduction = "My name is \(people.fullName!) and i'm \(people.age) years old.My cellphone is \(people.phone!). My gender is \(people.gender). I'm \(people.isTeenager ? "" : "not ")a teenager.My pet is \(people.pet)."
-        tableView.reloadData()
+//        tableView.reloadData()
     }
     
     @objc func doneTapped(){

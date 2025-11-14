@@ -50,19 +50,19 @@ open class MenusItem<T, U: Equatable>: DataTableItem<T, U?, U?> {
     }
     
     public override func createCell() -> UITableViewCell {
-        let cell = IndicatorMenuCell<U>(reuseIdentifier: identifier)
+        let cell = IndicatorMenuCell(reuseIdentifier: identifier)
         return cell
     }
 
     override open func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
         super.setup(tableView, cell: cell, at: indexPath)
 
-        guard let menuCell = cell as? IndicatorMenuCell<U> else { return }
+        guard let menuCell = cell as? IndicatorMenuCell else { return }
         
         let description = getDescription()
         let displayText = description ?? emptyDescription
         let isEmptyState = (description == nil && emptyDescription != nil)
-        
+                
         menuCell.configData(
             title ?? "",
             content: displayText,
@@ -116,10 +116,14 @@ open class MenusItem<T, U: Equatable>: DataTableItem<T, U?, U?> {
         
         return UIMenu(title: menuTitle ?? "", children: allSubmenus)
     }
+    
+    open override func select(_ tableView: UITableView, at indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }
 
 @available(iOS 15.0, *)
-class IndicatorMenuCell<T: Equatable>: UITableViewCell {
+class IndicatorMenuCell: UITableViewCell {
     var tapAction: (() -> Void)?
 
     lazy var titleLabel: UILabel = {
@@ -153,6 +157,14 @@ class IndicatorMenuCell<T: Equatable>: UITableViewCell {
     public init(reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
         setupUI()
+    }
+    
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        titleLabel.text = nil
+        button.setTitle(nil, for: .normal)
+        button.menu = nil
     }
 
     @available(*, unavailable)
