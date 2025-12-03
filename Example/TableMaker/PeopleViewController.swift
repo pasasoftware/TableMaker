@@ -11,19 +11,26 @@ import Foundation
 
 import TableMaker
 
-class HobbyImageConverter: Converter<Int, UIImage?>{
+class HobbyImageConverter: Converter<Int?, UIImage?>{
     //    let images = [#imageLiteral(resourceName: "football"),#imageLiteral(resourceName: "rocket")]
     
     let images = [UIImage.init(named: "football")?.withRenderingMode(.alwaysOriginal),
                   UIImage.init(named: "rocket")?.withRenderingMode(.alwaysOriginal)]
     
-    public override func convert(_ value: Int) -> UIImage? {
-        return images[value]
+    override func convert(_ value: Int?) -> UIImage? {
+        value != nil ? images[value!] : nil
     }
     
-    public override func convertBack(_ value: UIImage?) -> Int? {
+    override func convertBack(_ value: UIImage?) -> Int?? {
         return images.firstIndex(of: value!)
     }
+//    public override func convert(_ value: Int?) -> UIImage? {
+//        return images[value]
+//    }
+//    
+//    public override func convertBack(_ value: UIImage?) -> Int? {
+//        return images.firstIndex(of: value!)
+//    }
 }
 
 class PeopleViewController: DetailViewController {
@@ -80,6 +87,7 @@ class PeopleViewController: DetailViewController {
             langItem.title = "level"
             langItem.setter = { $0.level = $1! }
             langItem.formatter = { "\($0!)" }
+//            langItem.addValidator(RequiredValidator())
             
             let nationItem = MenusItem(
                 people,
@@ -101,6 +109,7 @@ class PeopleViewController: DetailViewController {
                 $0?.title
             }
             nationItem.clearOptionTitle = "clear"
+//            nationItem.addValidator(RequiredValidator(), isNeeded: true)
             
             let section0 = TableSection([langItem, nationItem])
             section0.headerView = customView(title: "Section0 Header")
@@ -114,6 +123,7 @@ class PeopleViewController: DetailViewController {
         item1.title = "Name"
         item1.textFont = UIFont.boldSystemFont(ofSize: 20)
         item1.detailTextFont = UIFont.boldSystemFont(ofSize: 15)
+//        item1.addValidator(RequiredValidator())
         
         let item2 = ActionLabelItem2(people){$0.fullName}
         item2.title = "Action Label"
@@ -125,19 +135,20 @@ class PeopleViewController: DetailViewController {
             c.view.backgroundColor = .systemGreen
             
             self.navigationController?.pushViewController(c, animated: true)
-            
         }
         
         let firstNameItem = TextFieldItem(people, host: self){$0.firstName}
+        firstNameItem.title = "first Name"
         firstNameItem.setter = {
             $0.firstName = $1
         }
         firstNameItem.didChange = {[weak self] ti in
             self?.reloadItem(item1)
         }
+        firstNameItem.addValidator(RequiredValidator())
         
         let lastNameItem = TextFieldItem(people, host: self){$0.lastName}
-        lastNameItem.title = "Lset Name"
+        lastNameItem.title = "Last Name"
         lastNameItem.setter = {
             $0.lastName = $1
         }
@@ -166,6 +177,7 @@ class PeopleViewController: DetailViewController {
         petItem.setter = {
             $0.pet = $1
         }
+//        petItem.addValidator(StringRequiredValidator())
         
         let hobbyItem = ImageSegmentItem(people){$0.hobby}
         hobbyItem.title = "Hobby"
@@ -174,6 +186,7 @@ class PeopleViewController: DetailViewController {
         hobbyItem.setter = {
             $0.hobby = $1
         }
+        hobbyItem.addValidator(RequiredValidator())
         
         let phoneItem = TextFieldItem(people, host: self){
             $0.phone
@@ -182,8 +195,7 @@ class PeopleViewController: DetailViewController {
         phoneItem.setter = {
             $0.phone = $1
         }
-        
-        phoneItem.addValidator(RegexValidator(phoneRegex))
+//        phoneItem.addValidator(RegexValidator(phoneRegex))
         
         let emailItem = TextFieldItem(people, host: self){
             $0.email
@@ -305,6 +317,7 @@ class PeopleViewController: DetailViewController {
         dateItem.datePickerMode = .dateAndTime
         dateItem.timeZome = TimeZone(identifier: "UTC")
         dateItem.title = "Birthday"
+//        dateItem.addValidator(RequiredValidator())
 
         let section9 = TableSection([dateItem])
         
@@ -336,7 +349,7 @@ class PeopleViewController: DetailViewController {
         let section12 = TableSection([introduction1, introduction2])
         
         let imageItem = ImageItem(people) { (p: People) -> UIImage in
-            p.iconImage
+            p.iconImage!
         }
         imageItem.host = self
         imageItem.title = "Icon"
@@ -355,6 +368,7 @@ class PeopleViewController: DetailViewController {
         if #available(iOS 13.0, *) {
             selectorItem.tableViewStyle = .insetGrouped
         }
+//        selectorItem.addValidator(RequiredValidator())
         
         let comoboItem = ComboItem(people, host: self, values: ["🐶","🐷","🐻"]){$0.pet}
         comoboItem.title = "Pet"
@@ -430,10 +444,13 @@ class PeopleViewController: DetailViewController {
     }
     
     @objc func doneTapped(){
-        let items = sections[1].items
-        insertItems(items: items, after: indexPath(for: sections.first!.items.first!)!)
+//        let items = sections[1].items
+//        insertItems(items: items, after: indexPath(for: sections.first!.items.first!)!)
         
         endEdit()
+        
+        checkValidators()
+        
         if let failedItem = firstFailedItem(){
             let alert = UIAlertController(title: "Error", message: failedItem.message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

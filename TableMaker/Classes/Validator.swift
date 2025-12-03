@@ -11,10 +11,18 @@ import Foundation
 public protocol Validatable : AnyObject {
     associatedtype T
     var validators: [Validator<T>] {get set}
+    
+    func validate()
 }
 
 public extension Validatable {
     func addValidator(_ validator: Validator<T>) {
+        validators.append(validator)
+    }
+    
+    func addValidator(_ validator: Validator<T>, isNeeded: Bool) {
+        guard isNeeded else { return }
+        
         validators.append(validator)
     }
     
@@ -47,18 +55,34 @@ open class Validator<T>{
     }
 }
 
-public class RequiredValidator: Validator<String?>{
-    public override var message: String{
+public class RequiredValidator<T>: Validator<T?> {
+    public override var message: String {
         return "is required"
     }
-    
-//    public init() {
-//        
-//    }
-    
+
+    public override func validate(_ value: T?) -> Bool {
+        return value != nil
+    }
+}
+
+public class StringRequiredValidator: Validator<String> {
+    public override var message: String {
+        return "is required"
+    }
+
+    public override func validate(_ value: String) -> Bool {
+        return !value.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+}
+
+public class OptionalStringRequiredValidator: Validator<String?> {
+    public override var message: String {
+        return "is required"
+    }
+
     public override func validate(_ value: String?) -> Bool {
-        guard let s = value else {return false}
-        return !s.isEmpty
+        guard let string = value else { return false }
+        return !string.trimmingCharacters(in: .whitespaces).isEmpty
     }
 }
 

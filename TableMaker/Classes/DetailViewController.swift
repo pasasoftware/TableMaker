@@ -34,6 +34,13 @@ open class DetailViewController: UITableViewController {
         tableView.cellLayoutMarginsFollowReadableWidth = false
     }
     
+    public func checkValidators() {
+        sections
+            .flatMap { $0.items }
+            .compactMap { $0 as? any Validatable }
+            .forEach { $0.validate() }
+    }
+    
     public func addSections(sections: [TableSection], indexSet: IndexSet) {
         for (i, row) in indexSet.enumerated() {
             self.sections.insert(sections[i], at: row)

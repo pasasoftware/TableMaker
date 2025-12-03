@@ -46,6 +46,10 @@ public class TextFieldCell: UITableViewCell {
         )
     }()
     
+    // 新增：记录左右视图
+    private weak var leftView: UIView?
+    private weak var rightView: UIView?
+    
     public init(reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -71,11 +75,16 @@ public class TextFieldCell: UITableViewCell {
     
     fileprivate func clearRightViewLeftView() {
         // 移除所有非 titleLabel 和 textField 的子视图
-        stackView.arrangedSubviews.forEach { view in
-            if view !== titleLabel && view !== textField {
-                stackView.removeArrangedSubview(view)
-                view.removeFromSuperview()
-            }
+        if let leftView = leftView {
+            stackView.removeArrangedSubview(leftView)
+            leftView.removeFromSuperview()
+            self.leftView = nil
+        }
+        
+        if let rightView = rightView {
+            stackView.removeArrangedSubview(rightView)
+            rightView.removeFromSuperview()
+            self.rightView = nil
         }
     }
     
@@ -101,7 +110,12 @@ public class TextFieldCell: UITableViewCell {
     }
     
     public func setLeftView(_ view: UIView) {
-        view.setContentHuggingPriority(.required, for: .horizontal)
+        if let oldLeftView = leftView {
+            stackView.removeArrangedSubview(oldLeftView)
+            oldLeftView.removeFromSuperview()
+        }
+        
+        view.setContentHuggingPriority(.required, for: . horizontal)
         view.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         // 找到 titleLabel 的位置，在其后插入
@@ -110,12 +124,21 @@ public class TextFieldCell: UITableViewCell {
         } else {
             stackView.insertArrangedSubview(view, at: 0)
         }
+        
+        self.leftView = view
     }
     
     public func setRightView(_ view: UIView) {
+        if let oldRightView = rightView {
+            stackView.removeArrangedSubview(oldRightView)
+            oldRightView.removeFromSuperview()
+        }
+        
         view.setContentHuggingPriority(.required, for: .horizontal)
         view.setContentCompressionResistancePriority(.required, for: .horizontal)
         stackView.addArrangedSubview(view)
+        
+        self.rightView = view
     }
 }
 

@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 class People {
-    var firstName: String? = "Allen"
+    var firstName: String?
     var lastName: String? = "Green"
     
     var fullName: String? {
@@ -27,7 +27,7 @@ class People {
     var pet: String = "🐶"
     var secondpet: String?
     
-    var hobby: Int = 0
+    var hobby: Int? = 1
 
     var birthday: Date? = nil
 

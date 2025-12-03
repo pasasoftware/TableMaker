@@ -241,7 +241,7 @@ open class DataTableItem<T, U: Equatable, V>: TableItem, UIPopoverPresentationCo
     }
 }
 
-extension DataTableItem : Validatable{
+extension DataTableItem : Validatable {
     public func getValidateMessage(_ validator: Validator<U>) -> String?{
         return "\(title.description) \(validator.message)"
     }
@@ -254,6 +254,14 @@ extension DataTableItem : Validatable{
             return "\(title.description) \(message)"
         default:
             return nil
+        }
+    }
+    
+    public func validate() {
+        let value = getValue()
+        
+        if let failedValidator = validate(value) {
+            onValidateFailed(failedValidator)
         }
     }
 }
