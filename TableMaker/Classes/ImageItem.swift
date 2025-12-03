@@ -56,7 +56,7 @@ public class ImageItem<T, U: Equatable>: DataTableItem<T,U,UIImage>{
         super.setup(tableView, cell: cell, at: indexPath)
         let cell = cell as! ImageCell
         cell.imageView?.image = convertValue()
-        cell.textLabel?.text = title
+        cell.textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
     }
     
     public override func select(_ tableView: UITableView, at indexPath: IndexPath) {

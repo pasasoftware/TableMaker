@@ -30,10 +30,8 @@ open class TweakLabelItem<T, U: Equatable, V>: DataTableItem<T, U, V> {
     open override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
         super.setup(tableView, cell: cell, at: indexPath)
 
-        // Set text
-        cell.textLabel?.text = title
-        cell.detailTextLabel?.text = getDescription()
-        cell.setNeedsUpdateConstraints()
+        guard let cell = cell as? TweakLabelCell else { return }
+        cell.configData(title, detail: getDescription(), isRequire: isRequire)
     }
 }
 
@@ -56,6 +54,7 @@ open class TweakLabelCell: UITableViewCell {
         // Set multiple line
         detailTextLabel?.lineBreakMode = .byWordWrapping
         detailTextLabel?.numberOfLines = 0
+        detailTextLabel?.textAlignment = .left
 
         // Set autolayout and textLabel CHCR
         textLabel!.translatesAutoresizingMaskIntoConstraints = false
@@ -86,20 +85,16 @@ open class TweakLabelCell: UITableViewCell {
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Override
-    override open func layoutSubviews() {
-        super.layoutSubviews()
-        // Set text align
-        detailTextLabel?.textAlignment = .left
-    }
-
-    override open func updateConstraints() {
-        super.updateConstraints()
-        if let _ = textLabel?.text {
+    
+    func configData(_ title: String?, detail: String?, isRequire: Bool = false) {
+        textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
+        detailTextLabel?.text = detail
+        if title?.isEmpty == false {
+            textLabel?.isHidden = false
             NSLayoutConstraint.deactivate([textLeadingEmptyTitle, textYEmptyTitle])
             NSLayoutConstraint.activate([textLeading,textY])
         } else {
+            textLabel?.isHidden = true
             NSLayoutConstraint.deactivate([textLeading,textY])
             NSLayoutConstraint.activate([textLeadingEmptyTitle, textYEmptyTitle])
         }

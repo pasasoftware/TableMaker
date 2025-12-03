@@ -83,7 +83,7 @@ class PeopleViewController: DetailViewController {
                 host: self,
                 getter: { $0.level }
             )
-            
+            langItem.isRequire = true
             langItem.title = "level"
             langItem.setter = { $0.level = $1! }
             langItem.formatter = { "\($0!)" }
@@ -121,6 +121,7 @@ class PeopleViewController: DetailViewController {
         
         let item1 = LabelItem2(people){$0.fullName}
         item1.title = "Name"
+        item1.isRequire = true
         item1.textFont = UIFont.boldSystemFont(ofSize: 20)
         item1.detailTextFont = UIFont.boldSystemFont(ofSize: 15)
 //        item1.addValidator(RequiredValidator())
@@ -192,6 +193,7 @@ class PeopleViewController: DetailViewController {
         let phoneItem = TextFieldItem(people, host: self){
             $0.phone
         }
+        phoneItem.isRequire = true
         phoneItem.title = "Phone"
         phoneItem.setter = {
             $0.phone = $1
@@ -201,6 +203,7 @@ class PeopleViewController: DetailViewController {
         let emailItem = TextFieldItem(people, host: self){
             $0.email
         }
+        emailItem.isRequire = true
         emailItem.keyboardType = .emailAddress
         if #available(iOS 13.0, *) {
             emailItem.rightView = UIImageView(image: UIImage(systemName: "square.and.arrow.up.circle.fill")!)
@@ -225,6 +228,7 @@ class PeopleViewController: DetailViewController {
         // Action item demo
         let item4 = ActionItem(title: "Action item with image", image: UIImage(named: "bulb")){ _,_ in }
         let item5 = ActionItem(title: "Action item"){}
+        item5.isRequire = true
         
         let section1 = TableSection([ firstNameItem, lastNameItem,item1, item2, ageItem, petItem, hobbyItem, phoneItem, emailItem, genderItem])
         section1.headerView = customView(title: "Section1 Header")
@@ -388,6 +392,7 @@ class PeopleViewController: DetailViewController {
         
         let multiValues: [Int] = [1111, 2222, 3333, 4444, 5555]
         let multiSelectorItem = MultiSelectorItem2(people, host: self, values: multiValues, getter: { $0.multiSelector })
+        multiSelectorItem.isRequire = true
         multiSelectorItem.title = "Multi"
         multiSelectorItem.setter = { $0.multiSelector = $1 }
         // option：定制里面选项的显示格式

@@ -71,6 +71,10 @@ public enum DataItemStatus<U> {
 open class TableItem: NSObject {
     public var height: CGFloat?
     public var title: String?
+    /// 是否为必填项
+    /// 当设置为true时，在title前会显示红色星号标识
+    public var isRequire = false
+    
     open var accessoryType: UITableViewCell.AccessoryType {
         return .none
     }

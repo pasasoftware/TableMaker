@@ -26,16 +26,16 @@ open class LabelItem<T, U: Equatable, V>: DataTableItem<T,U,V>{
         let cell = UITableViewCell(style: .value1, reuseIdentifier: identifier)
         cell.selectionStyle = .none
         cell.accessoryType = accessoryType
-        cell.textLabel?.font = textFont
-        cell.detailTextLabel?.font = detailTextFont
         
         return cell
     }
     
     open override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
         super.setup(tableView, cell: cell, at: indexPath)
-        cell.textLabel?.text = title
+        cell.textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
         cell.detailTextLabel?.text = getDescription()
+        cell.textLabel?.font = textFont
+        cell.detailTextLabel?.font = detailTextFont
     }
 }
 
