@@ -69,7 +69,8 @@ open class MenusItem<T, U: Equatable>: DataTableItem<T, U?, U?> {
             isEmptyState: isEmptyState,
             menu: { [weak self] in
                 return self?.buildMenu()
-            })
+            },
+            isRequire: isRequire)
     }
 
     private func buildMenu() -> UIMenu {
@@ -172,8 +173,8 @@ class IndicatorMenuCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configData(_ title: String, content: String?, isEmptyState: Bool = false, menu: (() -> UIMenu?)?) {
-        titleLabel.text = title
+    func configData(_ title: String, content: String?, isEmptyState: Bool = false, menu: (() -> UIMenu?)?, isRequire: Bool = false) {
+        titleLabel.setLabelWithRequiredMark(title, isRequire: isRequire)
         button.setTitle(content, for: .normal)
         
         var config = button.configuration

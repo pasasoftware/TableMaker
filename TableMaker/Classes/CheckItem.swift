@@ -33,7 +33,7 @@ open class CheckItem<T, U: Equatable>: DataTableItem<T,U,Bool> {
     
     open override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
         super.setup(tableView, cell: cell, at: indexPath)
-        cell.textLabel?.text = title
+        cell.textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
         if convertValue() {
             cell.accessoryType = .checkmark
         }else{

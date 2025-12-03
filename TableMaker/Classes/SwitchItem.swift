@@ -44,7 +44,7 @@ public class SwitchItem<T, U: Equatable>: DataTableItem<T,U,Bool> {
     public override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
         super.setup(tableView, cell: cell, at: indexPath)
         let cell = cell as! SwitchCell
-        cell.textLabel?.text = title
+        cell.textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
         let switchControl = cell.switchControl!
         switchControl.isOn = convertValue()
         switchControl.addTarget(self, action: #selector(switchSelectionChanged), for: .valueChanged)

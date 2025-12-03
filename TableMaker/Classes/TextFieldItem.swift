@@ -93,8 +93,8 @@ public class TextFieldCell: UITableViewCell {
         textField.returnKeyType = .default
     }
     
-    public func configure(title: String?, placeholder: String? = nil, text: String? = nil) {
-        titleLabel.text = title
+    public func configure(title: String?, placeholder: String? = nil, text: String? = nil, isRequire: Bool = false) {
+        titleLabel.setLabelWithRequiredMark(title, isRequire: isRequire)
         titleLabel.isHidden = title?.isEmpty ?? true
         textField.placeholder = placeholder
         textField.text = text
@@ -187,7 +187,7 @@ open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFie
             cell.setRightView(rightView)
         }
         
-        cell.configure(title: title, placeholder: placeholder, text: convertValue())
+        cell.configure(title: title, placeholder: placeholder, text: convertValue(), isRequire: isRequire)
     }
     
     open override func endEdit() {

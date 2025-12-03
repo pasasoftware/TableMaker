@@ -48,7 +48,7 @@ public class SegmentItem<T, U: Equatable, V>: DataTableItem<T,U,V> {
         super.setup(tableView, cell: cell, at: indexPath)
         
         let cell = cell as! SegmentCell
-        cell.textLabel?.text = title
+        cell.textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
         
         guard let items = items else {
             return

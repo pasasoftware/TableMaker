@@ -88,7 +88,7 @@ open class DateItem<T, U: Equatable> : LabelItem<T, U, Date?> {
     open override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
         super.setup(tableView, cell: cell, at: indexPath)
         let cell = cell as! DateCell
-        cell.textLabel?.text = title
+        cell.textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
         cell.detailTextLabel?.text = getDescription(withConverted: convertValue())
     }
     

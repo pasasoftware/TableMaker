@@ -64,7 +64,7 @@ public class SliderItem<T, U: Equatable>: DataTableItem<T,U,Float> {
     public override func setup(_ tableView: UITableView, cell: UITableViewCell, at indexPath: IndexPath) {
         super.setup(tableView, cell: cell, at: indexPath)
         let cell = cell as! SliderCell
-        cell.textLabel?.text = title
+        cell.textLabel?.setLabelWithRequiredMark(title, isRequire: isRequire)
         let slider = cell.slider!
         slider.maximumValue = maxValue
         slider.minimumValue = minValue
