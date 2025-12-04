@@ -157,6 +157,8 @@ open class DataTableItem<T, U: Equatable, V>: TableItem, UIPopoverPresentationCo
         if let failedValidator = validate(value) {
             onValidateFailed(failedValidator)
             return
+        } else {
+            onValidateSuccess()
         }
 
         willSetValue()
@@ -178,6 +180,10 @@ open class DataTableItem<T, U: Equatable, V>: TableItem, UIPopoverPresentationCo
         }
     }
 
+    func onValidateSuccess(){
+        status = .normal
+    }
+    
     func willSetValue() {
         status = .normal
         host?.valueWillChange(self)
@@ -262,10 +268,9 @@ extension DataTableItem : Validatable {
         
         if let failedValidator = validate(value) {
             onValidateFailed(failedValidator)
-            return
+        } else {
+            onValidateSuccess()
         }
-        
-        status = .normal
     }
 }
 

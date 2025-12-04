@@ -145,7 +145,8 @@ class PeopleViewController: DetailViewController {
         firstNameItem.didChange = {[weak self] ti in
             self?.reloadItem(item1)
         }
-        firstNameItem.addValidator(RequiredValidator())
+        firstNameItem.addValidator(OptionalStringRequiredValidator())
+        firstNameItem.addValidator(FunStringValidator())
         
         let lastNameItem = TextFieldItem(people, host: self){$0.lastName}
         lastNameItem.title = "Last Name"
@@ -458,5 +459,16 @@ class PeopleViewController: DetailViewController {
         }else {
             dismiss(animated: true, completion: nil)
         }
+    }
+}
+
+public class FunStringValidator: Validator<String?> {
+    public override var message: String {
+        return "is required"
+    }
+
+    public override func validate(_ value: String?) -> Bool {
+        guard let string = value else { return false }
+        return string == "fun"
     }
 }
