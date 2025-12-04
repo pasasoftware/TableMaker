@@ -262,7 +262,10 @@ extension DataTableItem : Validatable {
         
         if let failedValidator = validate(value) {
             onValidateFailed(failedValidator)
+            return
         }
+        
+        status = .normal
     }
 }
 
