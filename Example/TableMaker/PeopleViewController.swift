@@ -146,7 +146,7 @@ class PeopleViewController: DetailViewController {
             self?.reloadItem(item1)
         }
         firstNameItem.addValidator(OptionalStringRequiredValidator())
-        firstNameItem.addValidator(FunStringValidator())
+//        firstNameItem.addValidator(FunStringValidator())
         
         let lastNameItem = TextFieldItem(people, host: self){$0.lastName}
         lastNameItem.title = "Last Name"

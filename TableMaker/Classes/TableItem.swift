@@ -157,8 +157,6 @@ open class DataTableItem<T, U: Equatable, V>: TableItem, UIPopoverPresentationCo
         if let failedValidator = validate(value) {
             onValidateFailed(failedValidator)
             return
-        } else {
-            onValidateSuccess()
         }
 
         willSetValue()
