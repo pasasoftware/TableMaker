@@ -5,7 +5,7 @@
 //  Created by ZhangTeng on 2025/12/3.
 //
 
-import Foundation
+import UIKit
 
 extension UILabel {
     
@@ -19,9 +19,9 @@ extension UILabel {
         
         if isRequire {
             let attributedString = NSMutableAttributedString()
-            let starString = "* "
-            attributedString.append(NSAttributedString(string: starString, attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemRed]))
+            let starString = " *"
             attributedString.append(NSAttributedString(string: title))
+            attributedString.append(NSAttributedString(string: starString, attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemRed]))
             
             self.text = nil
             self.attributedText = attributedString
