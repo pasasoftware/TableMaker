@@ -274,6 +274,13 @@ extension DataTableItem : Validatable {
             onValidateSuccess()
         }
     }
+    
+    public func addRequireValidator(_ validator: Validator<U>, isRequire: Bool) {
+        self.isRequire = isRequire
+        
+        guard isRequire else { return }
+        validators = [validator] + validators
+    }
 }
 
 extension DataTableItem: Failable {
