@@ -284,7 +284,6 @@ class PeopleViewController: DetailViewController {
         
         let section6 = TableSection([item8])
         
-        
         let item9 = StepperItem(people){
             $0.stepValue
         }
