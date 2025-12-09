@@ -330,6 +330,7 @@ class PeopleViewController: DetailViewController {
         textItem.numberOfLines = 3
 //        textItem.maxHeight = 250
         textItem.host = self
+        textItem.isRequire = true 
         textItem.placeholder = "Pelase enter the leave message"
         textItem.setter = {
             $0.leaveMessage = $1
