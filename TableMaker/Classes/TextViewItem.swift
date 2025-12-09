@@ -114,7 +114,7 @@ open class TextViewItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextView
             return
         }
         let label = cell.textView.value(forKey: "_placeholderLabel") as! UILabel
-        label.text = placeholder
+        label.setLabelWithRequiredMark(placeholder, isRequire: isRequire)
         cell.textView.text = convertValue()
         cell.textView.delegate = self
         
