@@ -41,8 +41,10 @@ public class TextViewCell: UITableViewCell{
         super.init(style: .value1, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(textView)
         
-        textView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
-        textView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+        let margin = contentView.layoutMarginsGuide
+
+        textView.leadingAnchor.constraint(equalTo: margin.leadingAnchor).isActive = true
+        textView.trailingAnchor.constraint(equalTo: margin.trailingAnchor).isActive = true
         textView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8).isActive = true
         textView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8).isActive = true
         
