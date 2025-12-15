@@ -185,7 +185,6 @@ open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFie
     open override func createCell() -> UITableViewCell {
         let cell = TextFieldCell(reuseIdentifier: identifier)
         cell.textField.textAlignment = .right
-        cell.textField.keyboardType = keyboardType
         cell.selectionStyle = .none
         
         return cell
@@ -198,6 +197,7 @@ open class TextFieldItem<T, U: Equatable>: DataTableItem<T,U,String?>, UITextFie
         }
         
         cell.textField.textAlignment = textAlignment
+        cell.textField.keyboardType = keyboardType
         cell.textField.delegate = self
         cell.textField.returnKeyType = .done
         
