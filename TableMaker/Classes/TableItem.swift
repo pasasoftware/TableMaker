@@ -154,17 +154,27 @@ open class DataTableItem<T, U: Equatable, V>: TableItem, UIPopoverPresentationCo
         }
 
         if getValue() == value {
-            status = .normal
+            // 即使值一样，也建议重新验证一次，确保 status 状态正确
+            // 比如以前是 validateFailed，再次传入同样的值应该保持 failed 而不是变成 normal
+            if let failedValidator = validate(value) {
+                 onValidateFailed(failedValidator)
+            } else {
+            onValidateSuccess()
+            }
             return
         }
 
+        // 修改后逻辑：先更新，后验证
+        willSetValue() // willSetValue 会重置 status 为 normal
+        setter(data, value)
+        
+        // 更新完值后，检查是否合规，更新状态
         if let failedValidator = validate(value) {
             onValidateFailed(failedValidator)
-            return
+        } else {
+            onValidateSuccess()
         }
 
-        willSetValue()
-        setter(data, value)
         didSetValue()
     }
 
